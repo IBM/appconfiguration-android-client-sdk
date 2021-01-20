@@ -52,8 +52,8 @@ Choose to integrate the AppConfiguration Android client SDK package using either
         ```kt
         dependencies {
 	        implementation "com.ibm.appconfiguration.android:lib:1.0.0"
-		implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    		implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
+	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
         ```
         
@@ -197,8 +197,8 @@ Choose to integrate the AppConfiguration Android client SDK package using either
         ```java
         dependencies {
 	        implementation "com.ibm.appconfiguration.android:lib:1.0.0"
-		implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    		implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
+	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
         ```
     
