@@ -51,7 +51,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.0.0"
+	        implementation "com.ibm.appconfiguration.android:lib:1.1.0"
 	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
 	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
@@ -85,23 +85,6 @@ Choose to integrate the AppConfiguration Android client SDK package using either
   - apikey : ApiKey of the App Configuration service. Get it from the service credentials section of the dashboard.
   - collection_id : Id of the collection created in App Configuration service instance.
 
-
-## Set client attributes for feature evaluation
- 
- ```kt
-    JSONObject attributes = new JSONObject();
-    try {
-
-        attributes.put("city", "Bengaluru");
-        attributes.put("country", "India");
-
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-    appConfiguration.setClientAttributes(attributes)
- ```
-
 ## Listen to the feature changes.
 
 ```kt
@@ -131,20 +114,29 @@ val features: HashMap<String, Feature>? = appConfiguration.getFeatures();
 
 ```kt
 
+JSONObject identityAttributes = new JSONObject();
+try {
+    identityAttributes.put("city", "Bangalore");
+    identityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
+
+
 val appConfiguration = AppConfiguration.getInstance()
 val feature: Feature? = appConfiguration.getFeature("featureId")
 
 if (feature?.getFeatureDataType() === Feature.FeatureType.NUMERIC) {
 
-    val value = feature.getCurrentValue<Int>()
+    val value = feature.getCurrentValue("identityId", identityAttributes)
 
 } else if (feature?.getFeatureDataType() === Feature.FeatureType.BOOLEAN) {
 
-    val value = feature.getCurrentValue<Boolean>()
+    val value = feature.getCurrentValue("identityId", identityAttributes)
 
 } else if (feature?.getFeatureDataType() === Feature.FeatureType.STRING) {
 
-    val value = feature.getCurrentValue<String>()
+    val value = feature.getCurrentValue("identityId", identityAttributes)
 
 }
 ```
@@ -196,7 +188,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.0.0"
+	        implementation "com.ibm.appconfiguration.android:lib:1.1.0"
 	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
 	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
@@ -241,21 +233,6 @@ Choose to integrate the AppConfiguration Android client SDK package using either
   - collection_id : Id of the collection created in App Configuration service instance.
 
 
-## Set client attributes for feature evaluation
-
- ```java
-    JSONObject attributes = new JSONObject();
-
-    try {
-        attributes.put("city", "Bengaluru");
-        attributes.put("country", "India");
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-    appConfiguration.setClientAttributes(attributes);
- ```
-
 ## Listen to the feature changes.
 
 ```java
@@ -286,20 +263,29 @@ HashMap<String,Feature> features =  appConfiguration.getFeatures();
 
 ```java
 
+JSONObject identityAttributes = new JSONObject();
+
+try {
+    identityAttributes.put("city", "Bengaluru");
+    identityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
+
 AppConfiguration appConfiguration = AppConfiguration.getInstance();
 Feature feature = appConfiguration.getFeature("featureId")
 if(feature != null) 
     switch (feature.getFeatureDataType())
         case STRING:
-            String value = (String) feature.getCurrentValue();
+            String value = (String) feature.getCurrentValue(identityId, identityAttributes);
             System.out.println(value);
             break;
         case BOOLEAN:
-            Boolean boolVal = (Boolean) feature.getCurrentValue();
+            Boolean boolVal = (Boolean) feature.getCurrentValue(identityId, identityAttributes);
             System.out.println(boolVal);
             break;
         case NUMERIC:
-            Integer intVal = (Integer) feature.getCurrentValue();
+            Integer intVal = (Integer) feature.getCurrentValue(identityId, identityAttributes);
             System.out.println(intVal);
             break;
     }
@@ -329,7 +315,4 @@ appConfiguration.fetchFeatureData()
 
 ## License
 
-(C) Copyright IBM Corp. 2021.Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
-the License. You may obtain a copy of the License athttp://www.apache.org/licenses/LICENSE-2.0Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
-an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
-specific language governing permissions and limitations under the License.
+This project is released under the Apache 2.0 license. The license's full text can be found in [LICENSE](https://github.com/IBM/appconfiguration-android-client-sdk/blob/master/LICENSE)

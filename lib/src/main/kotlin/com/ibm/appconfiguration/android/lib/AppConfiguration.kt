@@ -40,7 +40,6 @@ class AppConfiguration {
     private var isInitialized = false
     private var featureHandlerInstance: FeatureHandler? = null
 
-
     companion object {
         private var instance: AppConfiguration? = null
 
@@ -156,18 +155,6 @@ class AppConfiguration {
     fun registerFeaturesUpdateListener(listener: FeaturesUpdateListener) {
         if (this.isInitializedFeature && featureHandlerInstance != null) {
             featureHandlerInstance?.registerFeaturesUpdateListener(listener)
-        } else {
-            Logger.error(Constants.COLLECTION_SUB_ERROR)
-        }
-    }
-
-    /**
-     * Set the client attributes for AppConfiguration features
-     * @param attributes  Client attributes.
-     */
-    fun setClientAttributes(attributes: JSONObject) {
-        if (this.isInitializedFeature && featureHandlerInstance != null) {
-            featureHandlerInstance?.setClientAttributes(attributes)
         } else {
             Logger.error(Constants.COLLECTION_SUB_ERROR)
         }

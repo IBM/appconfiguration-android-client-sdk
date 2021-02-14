@@ -19,13 +19,4 @@ internal object Validators {
     fun validateString(value: String?): Boolean {
         return !(value == null || value.isEmpty() || value == "")
     }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> convertValue(value: Any): T? {
-        return try {
-            value as T
-        } catch (e: Exception) {
-            null
-        }
-    }
 }

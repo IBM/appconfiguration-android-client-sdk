@@ -20,10 +20,9 @@ import com.ibm.appconfiguration.android.lib.feature.internal.FileManager
 import com.ibm.appconfiguration.android.lib.feature.internal.Metering
 import com.ibm.appconfiguration.android.lib.feature.internal.URLBuilder
 import com.ibm.appconfiguration.android.lib.feature.internal.Validators
-import com.ibm.appconfiguration.android.lib.feature.models.internal.Segment
 import com.ibm.appconfiguration.android.lib.feature.models.Feature
+import com.ibm.appconfiguration.android.lib.feature.models.internal.Segment
 import com.ibm.appconfiguration.android.lib.feature.models.internal.SegmentRules
-
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -33,7 +32,6 @@ internal class FeatureHandler {
 
     private lateinit var collectionId: String
     private lateinit var appContext: Context
-    private var clientAttributes = JSONObject()
     private var featuresUpdateListener: FeaturesUpdateListener? = null
     private var isInitialized = false
     private lateinit var urlBuilder: URLBuilder
@@ -70,10 +68,6 @@ internal class FeatureHandler {
         } else {
             Logger.error("Invalid action in FeatureHandler. This action can be performed only after a successful initialization. Please check the initialization section for errors.")
         }
-    }
-
-    fun setClientAttributes(attributes: JSONObject) {
-        clientAttributes = attributes
     }
 
     fun getFeatures(): HashMap<String, Feature>? {
@@ -139,10 +133,10 @@ internal class FeatureHandler {
         )
     }
 
-    fun <T> featureEvaluation(feature: Feature): T? {
+    fun featureEvaluation(feature: Feature, identityAttributes: JSONObject): Any? {
 
-        if (clientAttributes.length() <= 0) {
-            return Validators.convertValue<T>(feature.enabled_value)
+        if (identityAttributes.length() <= 0) {
+            return feature.enabled_value
         }
 
         val rulesMap = parseRules(feature.getSegmentRules())
@@ -158,11 +152,11 @@ internal class FeatureHandler {
                         for(innerLevel in 0 until segments.length()) {
 
                             val segmentKey = segments.getString(innerLevel)
-                            if (evaluateSegment(segmentKey)) {
+                            if (evaluateSegment(segmentKey, identityAttributes)) {
                                 return if (segmentRule.getValue() === "\$default") {
-                                    Validators.convertValue<T>(feature.enabled_value)
+                                    feature.enabled_value
                                 } else {
-                                    Validators.convertValue<T>(segmentRule.getValue())
+                                    segmentRule.getValue()
                                 }
                             }
                         }
@@ -172,13 +166,13 @@ internal class FeatureHandler {
                 }
             }
         }
-        return Validators.convertValue<T>(feature.enabled_value)
+        return feature.enabled_value
     }
 
-    private fun evaluateSegment(segmentKey: String): Boolean {
+    private fun evaluateSegment(segmentKey: String, identityAttributes: JSONObject): Boolean {
         if (segmentMap.containsKey(segmentKey)) {
             val segment = segmentMap[segmentKey]
-            return segment!!.evaluateRule(clientAttributes)
+            return segment!!.evaluateRule(identityAttributes)
         }
         return false
     }
