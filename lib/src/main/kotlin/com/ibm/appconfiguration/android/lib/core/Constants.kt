@@ -20,5 +20,7 @@ object Constants {
     const val APIKEY_ERROR = INIT_ERROR + "Provide a valid apikey."
     const val COLLECTIONID_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization. Please check the initialization section for errors."
     const val COLLECTION_SUB_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization and set collections ID value operation. Please check the initialization and setCollectionId sections for errors."
+    const val IDENTITY_UPDATE_ERROR = "An `IdentityId` value should be passed for this method."
+
 }
 

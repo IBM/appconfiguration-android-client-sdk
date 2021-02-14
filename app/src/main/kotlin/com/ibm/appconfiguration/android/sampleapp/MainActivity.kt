@@ -32,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     var nDialog: ProgressBar? = null
     var textView: TextView? = null
     var constraintLayout: ConstraintLayout? = null
+    val identityAttributes = JSONObject()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +47,14 @@ class MainActivity : AppCompatActivity() {
 
         nDialog = findViewById(R.id.progressBar)
         nDialog?.visibility = View.INVISIBLE
-
         textView = findViewById(R.id.textView)
+
+        try {
+            identityAttributes.put("cityRadius", "40")
+            identityAttributes.put("radius", "50")
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
 
         setUp()
         val clickListener = View.OnClickListener { view ->
@@ -68,38 +76,23 @@ class MainActivity : AppCompatActivity() {
 
         nDialog?.visibility = View.VISIBLE
 
-        val expectedApiKey = APIKEY
-        val expectedGuid = GUID
+        val expectedApiKey = getString(R.string.apikey)
+        val expectedGuid = getString(R.string.guid)
 
         val appConfiguration = AppConfiguration.getInstance()
         appConfiguration.init(application, AppConfiguration.REGION_US_SOUTH, expectedGuid, expectedApiKey)
-        //appConfiguration.fetchFeatureData()
-        val attributes = JSONObject()
-        try {
-            attributes.put("cityRadius", "40")
-            attributes.put("radius", "50")
-            appConfiguration.setClientAttributes(attributes)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+        appConfiguration.setCollectionId(getString(R.string.collectionid))
 
-
-        appConfiguration.setCollectionId(COLLECTIONID)
-        appConfiguration.setClientAttributes(attributes)
         appConfiguration.enableDebug(true)
 
         appConfiguration.registerFeaturesUpdateListener(object :
             FeaturesUpdateListener {
             override fun onFeaturesUpdate() {
                 nDialog?.visibility = View.INVISIBLE
-
                 println(appConfiguration.getFeature("featurebool"))
                 println(appConfiguration.getFeatures())
-
             }
-
         })
-
     }
 
     private fun buttonAction(featureId : String) {
@@ -109,15 +102,15 @@ class MainActivity : AppCompatActivity() {
         val appConfiguration = AppConfiguration.getInstance()
         val feature: Feature? = appConfiguration.getFeature(featureId)
         if (feature?.getFeatureDataType() === Feature.FeatureType.NUMERIC) {
-            textView!!.text = featureId + "value is :" + feature.getCurrentValue<Int>()
+            textView!!.text = featureId + "value is :" + feature.getCurrentValue("pvqr", identityAttributes)
             constraintLayout!!.setBackgroundColor(Color.RED)
         } else if (feature?.getFeatureDataType() === Feature.FeatureType.BOOLEAN) {
-            val value = feature.getCurrentValue<Boolean>()
+            val value = feature.getCurrentValue("pvqr", identityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.GREEN)
         } else if (feature?.getFeatureDataType() === Feature.FeatureType.STRING) {
-            val value = feature.getCurrentValue<String>()
+            val value = feature.getCurrentValue("pvqr", identityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.YELLOW)

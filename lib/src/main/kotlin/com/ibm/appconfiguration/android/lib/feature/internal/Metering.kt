@@ -25,7 +25,7 @@ import kotlin.collections.HashMap
 
 internal class Metering {
 
-    private var sendInterval:Long = 5
+    private var sendInterval:Long = 600000
     private var appContext: Context? = null
     private var urlBuilder: URLBuilder? = null
     var meteringData: ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>> =

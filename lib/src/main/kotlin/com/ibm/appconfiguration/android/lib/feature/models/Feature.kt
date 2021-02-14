@@ -13,9 +13,9 @@
 
 package com.ibm.appconfiguration.android.lib.feature.models
 
+import com.ibm.appconfiguration.android.lib.core.Constants
 import com.ibm.appconfiguration.android.lib.core.Logger
 import com.ibm.appconfiguration.android.lib.feature.FeatureHandler
-import com.ibm.appconfiguration.android.lib.feature.internal.Validators
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -72,17 +72,23 @@ class Feature(featureList: JSONObject) {
     fun getSegmentRules(): JSONArray = segment_rules
 
     /** Get current value of the Feature. Pass the Data type. */
-    fun <T> getCurrentValue(): T? {
+    fun getCurrentValue(identityId: String, identityAttributes: JSONObject = JSONObject()): Any? {
+
+        if(identityId == "") {
+            Logger.error(Constants.IDENTITY_UPDATE_ERROR)
+            return null
+        }
+
         val featureHandler: FeatureHandler = FeatureHandler.getInstance()
         featureHandler.recordEvaluation(this.feature_id)
         return if (enabled) {
             if (segment_exists && segment_rules.length() > 0) {
-                featureHandler.featureEvaluation(this)
+                featureHandler.featureEvaluation(this, identityAttributes)
             } else {
-                Validators.convertValue(enabled_value)
+                return enabled_value
             }
         } else {
-            Validators.convertValue(disabled_value)
+            return disabled_value
         }
     }
 }
