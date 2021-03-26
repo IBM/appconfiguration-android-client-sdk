@@ -18,7 +18,7 @@ import com.ibm.appconfiguration.android.lib.core.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.text.SimpleDateFormat
+import java.time.Instant;
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
@@ -62,11 +62,10 @@ internal class Metering {
         var hasData = false
         val featureJson: HashMap<String, Any> = HashMap<String, Any>()
         featureJson["count"] = 1
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        val currentDate = simpleDateFormat.format(Date())
+        val currentDate = Instant.now().toString()
         featureJson["evaluation_time"] = currentDate
 
-        if (this.meteringData.contains(guid)) {
+        if (this.meteringData.containsKey(guid)) {
 
             if (meteringData[guid]!!.containsKey(collectionId)) {
 
