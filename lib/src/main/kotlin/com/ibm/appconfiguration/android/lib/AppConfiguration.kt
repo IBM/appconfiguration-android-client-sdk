@@ -1,26 +1,29 @@
-/*
- * (C) Copyright IBM Corp. 2021.
+/**
+ * Copyright 2021 IBM Corp. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ibm.appconfiguration.android.lib
 
 import android.app.Application
 import com.ibm.appconfiguration.android.lib.core.Logger
-import com.ibm.appconfiguration.android.lib.core.Constants
-import com.ibm.appconfiguration.android.lib.feature.FeatureHandler
-import com.ibm.appconfiguration.android.lib.feature.FeaturesUpdateListener
-import com.ibm.appconfiguration.android.lib.feature.internal.Validators
-import com.ibm.appconfiguration.android.lib.feature.models.Feature
-import org.json.JSONObject
+import com.ibm.appconfiguration.android.lib.configurations.internal.ConfigMessages
+import com.ibm.appconfiguration.android.lib.configurations.ConfigurationHandler
+import com.ibm.appconfiguration.android.lib.configurations.ConfigurationUpdateListener
+import com.ibm.appconfiguration.android.lib.configurations.internal.Validators
+import com.ibm.appconfiguration.android.lib.configurations.models.Feature
+import com.ibm.appconfiguration.android.lib.configurations.models.Property
 import java.util.HashMap
 
 
@@ -36,18 +39,16 @@ class AppConfiguration {
     private var region: String = AppConfiguration.REGION_US_SOUTH
     private var apikey: String? = null
     private var guid: String? = null;
-    private var isInitializedFeature = false
+    private var isInitializedConfig = false
     private var isInitialized = false
-    private var featureHandlerInstance: FeatureHandler? = null
+    private var configurationHandlerInstance: ConfigurationHandler? = null
 
     companion object {
         private var instance: AppConfiguration? = null
 
-        @JvmField
-        val REGION_US_SOUTH = "us-south"
-
-        @JvmField
-        val REGION_EU_GB = "eu-gb"
+        const val REGION_US_SOUTH = "us-south"
+        const val REGION_EU_GB = "eu-gb"
+        const val REGION_AU_SYD = "au-syd"
 
         @JvmField
         var overrideServerHost: String? = null
@@ -72,17 +73,17 @@ class AppConfiguration {
     fun init(application: Application, region: String, guid: String, apikey: String) {
 
         if (!Validators.validateString(region)) {
-            Logger.error(Constants.REGION_ERROR)
+            Logger.error(ConfigMessages.REGION_ERROR)
             return
         }
 
         if (!Validators.validateString(guid)) {
-            Logger.error(Constants.GUID_ERRROR)
+            Logger.error(ConfigMessages.GUID_ERROR)
             return
         }
 
         if (!Validators.validateString(apikey)) {
-            Logger.error(Constants.APIKEY_ERROR)
+            Logger.error(ConfigMessages.APIKEY_ERROR)
             return
         }
 
@@ -113,50 +114,50 @@ class AppConfiguration {
         return apikey ?: "";
     }
 
-    // MARK: Feature Section
+    // MARK: Configuration Section
 
     /**
-     * Set the AppConfiguration instance collectionId to get the features
+     * Set the AppConfiguration instance collectionId to get the configurations
      * @param collectionId   AppConfiguration instance collectionId.
      */
     fun setCollectionId(collectionId: String) {
 
         if (!Validators.validateString(collectionId)) {
-            Logger.error("Provide a valid collectionId AppConfiguration init")
+            Logger.error(ConfigMessages.COLLECTION_ID_VALUE_ERROR);
             return
         }
 
         if (!isInitialized) {
-            Logger.error(Constants.COLLECTIONID_ERROR)
+            Logger.error(ConfigMessages.COLLECTIONID_ERROR)
             return
         }
 
-        featureHandlerInstance = FeatureHandler.getInstance()
-        featureHandlerInstance?.init(this.application!!.applicationContext, collectionId)
-        featureHandlerInstance?.fetchFeaturesData()
-        this.isInitializedFeature = true
+        configurationHandlerInstance = ConfigurationHandler.getInstance()
+        configurationHandlerInstance?.init(this.application!!.applicationContext, collectionId)
+        configurationHandlerInstance?.fetchConfigurations()
+        this.isInitializedConfig = true
     }
 
     /**
-     * Reload the AppConfiguration features
+     * Reload the AppConfiguration configurations
      */
-    fun fetchFeatureData() {
-        if (this.isInitializedFeature && featureHandlerInstance != null) {
-            featureHandlerInstance?.fetchFeaturesData()
+    fun fetchConfigurations() {
+        if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.fetchConfigurations()
         } else {
-            Logger.error(Constants.COLLECTION_SUB_ERROR)
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
         }
     }
 
     /**
-     * Set the listener for AppConfiguration features
-     * @param listener  FeaturesUpdateListener instance.
+     * Set the listener for AppConfiguration configurations update
+     * @param listener  ConfigurationUpdateListener instance.
      */
-    fun registerFeaturesUpdateListener(listener: FeaturesUpdateListener) {
-        if (this.isInitializedFeature && featureHandlerInstance != null) {
-            featureHandlerInstance?.registerFeaturesUpdateListener(listener)
+    fun registerConfigurationUpdateListener(listener: ConfigurationUpdateListener) {
+        if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.registerConfigurationUpdateListener(listener)
         } else {
-            Logger.error(Constants.COLLECTION_SUB_ERROR)
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
         }
     }
 
@@ -165,20 +166,43 @@ class AppConfiguration {
      * @param featureId  Feature id value.
      */
     fun getFeature(featureId: String): Feature? {
-        return if (this.isInitializedFeature && featureHandlerInstance != null) {
-            featureHandlerInstance?.getFeature(featureId)
+        return if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.getFeature(featureId)
         } else {
-            Logger.error(Constants.COLLECTION_SUB_ERROR)
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
             null
         }
     }
 
     /** Get all the features */
     fun getFeatures(): HashMap<String, Feature>? {
-        return if (this.isInitializedFeature && featureHandlerInstance != null) {
-            featureHandlerInstance?.getFeatures()
+        return if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.getFeatures()
         } else {
-            Logger.error(Constants.COLLECTION_SUB_ERROR)
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
+            null
+        }
+    }
+
+    /** Get all the Properties */
+    fun getProperties(): HashMap<String, Property>? {
+        return if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.getProperties()
+        } else {
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
+            null
+        }
+    }
+
+    /**
+     * Get a Property with the propertyId.
+     * @param propertyId  Property id value.
+     */
+    fun getProperty(propertyId: String?): Property? {
+        return if (this.isInitializedConfig && configurationHandlerInstance != null) {
+            configurationHandlerInstance?.getProperty(propertyId)
+        } else {
+            Logger.error(ConfigMessages.COLLECTION_INIT_ERROR)
             null
         }
     }

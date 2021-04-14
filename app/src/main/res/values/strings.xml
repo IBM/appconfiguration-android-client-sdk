@@ -3,6 +3,7 @@
     <string name="number_feature">Get Number Feature</string>
     <string name="String_feature">Get String Feature</string>
     <string name="bool_feature">Get Boolean Feature</string>
+    <string name="property">Get Property</string>
     <string name="apikey"></string>
     <string name="guid"></string>
     <string name="collectionid"></string>

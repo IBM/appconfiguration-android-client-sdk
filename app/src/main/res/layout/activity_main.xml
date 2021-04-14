@@ -50,6 +50,17 @@
         app:layout_constraintStart_toStartOf="@+id/numberButton"
         app:layout_constraintTop_toBottomOf="@+id/numberButton" />
 
+    <Button
+        android:id="@+id/propertyButton"
+        android:layout_width="204dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="116dp"
+        android:text="@string/property"
+        app:layout_constraintEnd_toEndOf="@+id/numberButton"
+        app:layout_constraintHorizontal_bias="0.625"
+        app:layout_constraintStart_toStartOf="@+id/numberButton"
+        app:layout_constraintTop_toBottomOf="@+id/numberButton" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"

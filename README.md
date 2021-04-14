@@ -1,7 +1,12 @@
-# App Configuration Android client SDK
+# IBM Cloud App Configuration Android client SDK
 
+IBM Cloud App Configuration SDK is used to perform feature flag and property evaluation based on the configuration on IBM Cloud App Configuration service.
 
-Repository for IBM Cloud App Configuration Android client SDK
+## Overview
+
+IBM Cloud App Configuration is a centralized feature management and configuration service on [IBM Cloud](https://www.cloud.ibm.com) for use with web and mobile applications, microservices, and distributed environments.
+
+Instrument your applications with App Configuration Android SDK, and use the App Configuration dashboard, CLI or API to define feature flags or properties, organized into collections and targeted to segments. Toggle feature flag states in the cloud to activate or deactivate features in your application or environment, when required. You can also manage the properties for distributed applications centrally.
 
 ## Contents
 - [Prerequisites](#prerequisites)
@@ -51,9 +56,9 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.1.1"
+	        implementation "com.ibm.appconfiguration.android:lib:1.2.0"
 	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
-	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+            implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
         ```
         
@@ -75,23 +80,26 @@ Choose to integrate the AppConfiguration Android client SDK package using either
                           "guid",
                           "apikey")
 
-    //To start the feature fetching operation, set the collectioId in the following way.
-     appConfiguration.setCollectionId("collection_id")
+    //To start the configuration fetching operation, set the collectionId in the following way.
+     appConfiguration.setCollectionId("collectionId")
  
 ```
 
-  - region : Region name where the service instance is created. Eg: `AppConfiguration.REGION_US_SOUTH`.
-  - guid : GUID of the App Configuration service. Get it from the service credentials section of the dashboard.
-  - apikey : ApiKey of the App Configuration service. Get it from the service credentials section of the dashboard.
-  - collection_id : Id of the collection created in App Configuration service instance.
+- region : Region name where the service instance is created. Use
+    - `AppConfiguration.REGION_US_SOUTH` for Dallas
+    - `AppConfiguration.REGION_EU_GB` for London
+    - `AppConfiguration.REGION_AU_SYD` for Sydney
+- guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
+- apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
+- collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
 
-## Listen to the feature changes.
+## Set listener for feature or property data changes
 
 ```kt
 
-appConfiguration.registerFeaturesUpdateListener(object : FeaturesUpdateListener {
+appConfiguration.registerConfigurationUpdateListener(object : ConfigurationUpdateListener {
 
-    override fun onFeaturesUpdate() {
+    override fun onConfigurationUpdate() {
         // ADD YOUR CODE
     }
 })
@@ -104,7 +112,7 @@ appConfiguration.registerFeaturesUpdateListener(object : FeaturesUpdateListener 
 val feature: Feature? = appConfiguration.getFeature("featureId")
 ```
 
-## Get all feature
+## Get all features
 
 ```kt
 val features: HashMap<String, Feature>? = appConfiguration.getFeatures();
@@ -141,7 +149,37 @@ if (feature?.getFeatureDataType() === Feature.FeatureType.NUMERIC) {
 }
 ```
 
-## Enable/Disable Logger
+## Get single Property
+
+```kt
+val property: Property? = appConfiguration.getProperty("propertyId")
+```
+
+## Get all Properties
+
+```kt
+val properties: HashMap<String, Property>? = appConfiguration.getProperties();
+```
+
+## Property evaluation
+
+```kt
+
+JSONObject identityAttributes = new JSONObject();
+try {
+    identityAttributes.put("city", "Bangalore");
+    identityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
+
+
+val appConfiguration = AppConfiguration.getInstance()
+val property: Property? = appConfiguration.getProperty("propertyId")
+val value = property.getCurrentValue("identityId", identityAttributes)
+```
+
+## Enable/Disable Logger (optional)
 
 ```kt
 val appConfiguration = AppConfiguration.getInstance()
@@ -156,11 +194,11 @@ appConfiguration.enableDebug(false)
 
 ```
 
-## Force fetch the features from server
+## Force fetch the configurations from server
 
 
 ```kt
-appConfiguration.fetchFeatureData()
+appConfiguration.fetchConfigurations()
 ```
 
 
@@ -188,9 +226,9 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.1.1"
+	        implementation "com.ibm.appconfiguration.android:lib:1.2.0"
 	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
-	        implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+            implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
 	    }
         ```
     
@@ -223,28 +261,30 @@ Choose to integrate the AppConfiguration Android client SDK package using either
       AppConfiguration appConfiguration = AppConfiguration.getInstance();
       appConfiguration.init(getApplication(), AppConfiguration.REGION_US_SOUTH, "guid", "apikey");
 
-      // To start the feature fetching operation, set the collectioId in the following way.
-      appConfiguration.setCollectionId("collection_id");
+      // To start the configuration fetching operation, set the collectionId in the following way.
+      appConfiguration.setCollectionId("collectionId");
 ```
 
-  - region : Region name where the service instance is created. Eg: `AppConfiguration.REGION_US_SOUTH`.
-  - guid : GUID of the App Configuration service. Get it from the service credentials section of the dashboard.
-  - apikey : ApiKey of the App Configuration service. Get it from the service credentials section of the dashboard.
-  - collection_id : Id of the collection created in App Configuration service instance.
+- region : Region name where the service instance is created. Use
+    - `AppConfiguration.REGION_US_SOUTH` for Dallas
+    - `AppConfiguration.REGION_EU_GB` for London
+    - `AppConfiguration.REGION_AU_SYD` for Sydney
+- guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
+- apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
+- collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
 
 
 ## Listen to the feature changes.
 
 ```java
 
-appConfiguration.registerFeaturesUpdateListener(new FeaturesUpdateListener() {
+appConfiguration.registerConfigurationUpdateListener(new ConfigurationUpdateListener() {
     @Override
-    public void onFeaturesUpdate() {
+    public void onConfigurationUpdate() {
        // ADD YOUR CODE
     }
 });
 ```
-
 
 ## Get single feature
 
@@ -292,7 +332,40 @@ if(feature != null)
 }
 ```
 
-## Enable/Disable Logger
+## Get single Property
+
+```java
+Property property = appConfiguration.getProperty("propertyId");
+
+```
+
+## Get all Properties
+
+```java
+HashMap<String,Property> properties =  appConfiguration.getProperties();
+
+```
+
+## Property evaluation
+
+```java
+
+JSONObject identityAttributes = new JSONObject();
+
+try {
+    identityAttributes.put("city", "Bengaluru");
+    identityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
+
+
+AppConfiguration appConfiguration = AppConfiguration.getInstance();
+Property property = appConfiguration.getProperty("propertyId")
+String value = (String) property.getCurrentValue(identityId, identityAttributes);
+```
+
+## Enable/Disable Logger (optional)
 
 ```Java
 AppConfiguration appConfiguration = AppConfiguration.getInstance();
@@ -307,10 +380,10 @@ appConfiguration.enableDebug(false);
 
 ```
 
-## Force fetch the features from server
+## Force fetch the configurations from server
 
 ```Java
-appConfiguration.fetchFeatureData()
+appConfiguration.fetchConfigurations()
 ```
 
 ## License
