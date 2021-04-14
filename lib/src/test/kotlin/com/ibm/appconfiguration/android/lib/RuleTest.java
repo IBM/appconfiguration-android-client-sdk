@@ -1,19 +1,22 @@
-/*
- * (C) Copyright IBM Corp. 2021.
+/**
+ * Copyright 2021 IBM Corp. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ibm.appconfiguration.android.lib;
 
-import com.ibm.appconfiguration.android.lib.feature.models.internal.Rule;
+import com.ibm.appconfiguration.android.lib.configurations.models.internal.Rule;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,11 +36,11 @@ public class RuleTest {
     public void setUpEndsWith() {
         JSONObject rules = new JSONObject();
         JSONArray values = new JSONArray();
-        values.put("in.ibm.com");
+        values.put("ibm.com");
         try {
             rules.put("values",values);
             rules.put("operator","endsWith");
-            rules.put("attribute_name","email");
+            rules.put("attribute_name","urls");
 
         } catch (Exception e) {
             System.out.println(e);
@@ -63,10 +66,10 @@ public class RuleTest {
     @Test
     public void testRules() throws JSONException {
         setUpEndsWith();
-        assertEquals(sut.attribute_name, "email");
+        assertEquals(sut.attribute_name, "urls");
         assertEquals(sut.operator, "endsWith");
         assertEquals(sut.values.length(), 1);
-        assertEquals(sut.values.getString(0), "in.ibm.com");
+        assertEquals(sut.values.getString(0), "ibm.com");
     }
 
     @Test
@@ -74,9 +77,9 @@ public class RuleTest {
         setUpEndsWith();
         JSONObject clientAttributes = new JSONObject();
         try {
-            clientAttributes.put("email","tester@in.ibm.com");
+            clientAttributes.put("urls","test.ibm.com");
             assertTrue(sut.evaluateRule(clientAttributes));
-            clientAttributes.put("email","tester@in.ibm.error");
+            clientAttributes.put("urls","test.ibm.error");
             assertFalse(sut.evaluateRule(clientAttributes));
         } catch (Exception e) {
             System.out.println(e);

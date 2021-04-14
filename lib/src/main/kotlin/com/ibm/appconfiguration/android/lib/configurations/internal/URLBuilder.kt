@@ -1,18 +1,20 @@
-
-/*
- * (C) Copyright IBM Corp. 2021.
+/**
+ * Copyright 2021 IBM Corp. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package com.ibm.appconfiguration.android.lib.feature.internal
+package com.ibm.appconfiguration.android.lib.configurations.internal
 
 import com.ibm.appconfiguration.android.lib.AppConfiguration
 
@@ -26,6 +28,7 @@ internal class URLBuilder {
     var httpBase = "https://"
     val _events = "/events/v1/instances/"
     var reWriteDomain: String? = null
+    private val httpType = "https://"
 
     companion object Factory {
         private var instance: URLBuilder? = null
@@ -38,12 +41,11 @@ internal class URLBuilder {
     }
 
     fun init(collectionId: String) {
+        httpBase = httpType
         if (AppConfiguration.overrideServerHost != null) {
-            httpBase = ""
             httpBase += AppConfiguration.overrideServerHost
             reWriteDomain = AppConfiguration.overrideServerHost
         } else {
-            httpBase = "https://"
             httpBase += AppConfiguration.getInstance().getRegion()
             httpBase += _baseUrl
             reWriteDomain = ""
@@ -57,9 +59,12 @@ internal class URLBuilder {
     }
 
     fun getMeteringurl(instanceGuid: String): String? {
-        var base = "https://" + AppConfiguration.getInstance().getRegion() + _baseUrl + _service
-        if (AppConfiguration.overrideServerHost != null) {
-            base = AppConfiguration.overrideServerHost.toString() + _service
+
+        var base = httpType
+        base += if (AppConfiguration.overrideServerHost != null) {
+            AppConfiguration.overrideServerHost.toString() + _service
+        } else {
+            AppConfiguration.getInstance().getRegion() + _baseUrl + _service
         }
         return "$base$_events$instanceGuid/usage"
     }

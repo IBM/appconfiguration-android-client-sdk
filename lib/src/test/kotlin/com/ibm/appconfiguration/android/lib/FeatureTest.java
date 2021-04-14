@@ -1,19 +1,23 @@
-/*
- * (C) Copyright IBM Corp. 2021.
+/**
+ * Copyright 2021 IBM Corp. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ibm.appconfiguration.android.lib;
 
-import com.ibm.appconfiguration.android.lib.feature.models.Feature;
+import com.ibm.appconfiguration.android.lib.configurations.models.ConfigurationType;
+import com.ibm.appconfiguration.android.lib.configurations.models.Feature;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,7 +32,7 @@ public class FeatureTest {
 
     Feature sut;
 
-    public void setUpStringFeature(Feature.FeatureType type, Object disabled, Object enaabled, Boolean isEnabled) {
+    public void setUpStringFeature(ConfigurationType type, Object disabled, Object enaabled, Boolean isEnabled) {
 
         JSONObject feature = new JSONObject();
         try {
@@ -49,33 +53,33 @@ public class FeatureTest {
 
     @Test
     public void testStringFeature() {
-        setUpStringFeature(Feature.FeatureType.STRING, "unknown user","Org user", true );
-        assertEquals(sut.getFeatureDataType(), Feature.FeatureType.STRING);
+        setUpStringFeature(ConfigurationType.STRING, "unknown user","Org user", true );
+        assertEquals(sut.getFeatureDataType(), ConfigurationType.STRING);
         assertEquals(sut.getFeatureName(), "defaultFeature");
         assertEquals(sut.getFeatureId(), "defaultfeature");
         assertEquals(sut.isEnabled(), true);
-        assertEquals((String) sut.getCurrentValue(), "Org user");
+        assertEquals((String) sut.getCurrentValue("pqrt", new JSONObject()), "Org user");
     }
 
     @Test
     public void testBooleanFeature() {
-        setUpStringFeature(Feature.FeatureType.BOOLEAN, false,true , true);
-        assertEquals(sut.getFeatureDataType(), Feature.FeatureType.BOOLEAN);
+        setUpStringFeature(ConfigurationType.BOOLEAN, false,true , true);
+        assertEquals(sut.getFeatureDataType(), ConfigurationType.BOOLEAN);
         assertEquals(sut.getFeatureName(), "defaultFeature");
         assertEquals(sut.getFeatureId(), "defaultfeature");
         assertEquals(sut.isEnabled(), true);
-        assertEquals((Boolean) sut.getCurrentValue(), true);
+        assertEquals((Boolean) sut.getCurrentValue("pqrt", new JSONObject()), true);
 
     }
 
     @Test
     public void testNumericFeature() {
-        setUpStringFeature(Feature.FeatureType.NUMERIC, 20,50, false );
-        assertEquals(sut.getFeatureDataType(), Feature.FeatureType.NUMERIC);
+        setUpStringFeature(ConfigurationType.NUMERIC, 20,50, false );
+        assertEquals(sut.getFeatureDataType(), ConfigurationType.NUMERIC);
         assertEquals(sut.getFeatureName(), "defaultFeature");
         assertEquals(sut.getFeatureId(), "defaultfeature");
         assertEquals(sut.isEnabled(), false);
-        assertEquals((int) sut.getCurrentValue(), 20);
+        assertEquals((int) sut.getCurrentValue("pqrt", new JSONObject()), 20);
 
     }
 }

@@ -1,14 +1,17 @@
-/*
- * (C) Copyright IBM Corp. 2021.
+/**
+ * Copyright 2021 IBM Corp. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ibm.appconfiguration.android.sampleapp
@@ -22,8 +25,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.ibm.appconfiguration.android.lib.AppConfiguration
-import com.ibm.appconfiguration.android.lib.feature.FeaturesUpdateListener
-import com.ibm.appconfiguration.android.lib.feature.models.Feature
+import com.ibm.appconfiguration.android.lib.configurations.ConfigurationUpdateListener
+import com.ibm.appconfiguration.android.lib.configurations.models.ConfigurationType
+import com.ibm.appconfiguration.android.lib.configurations.models.Feature
+import com.ibm.appconfiguration.android.lib.configurations.models.Property
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -44,6 +49,8 @@ class MainActivity : AppCompatActivity() {
         val feature1Button = findViewById<Button>(R.id.stringButton)
         val feature2Button = findViewById<Button>(R.id.numberButton)
         val feature3Button = findViewById<Button>(R.id.booleanButton)
+        val propertyButton = findViewById<Button>(R.id.propertyButton)
+
 
         nDialog = findViewById(R.id.progressBar)
         nDialog?.visibility = View.INVISIBLE
@@ -65,11 +72,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.stringButton -> buttonAction("featurestring")
                 R.id.numberButton -> buttonAction("featurenumeric")
                 R.id.booleanButton -> buttonAction("featurebool")
+                R.id.propertyButton -> buttonActionProperty("numericproperty")
             }
+
         }
         feature1Button.setOnClickListener(clickListener)
         feature2Button.setOnClickListener(clickListener)
         feature3Button.setOnClickListener(clickListener)
+        propertyButton.setOnClickListener(clickListener)
     }
 
     private fun setUp() {
@@ -80,14 +90,15 @@ class MainActivity : AppCompatActivity() {
         val expectedGuid = getString(R.string.guid)
 
         val appConfiguration = AppConfiguration.getInstance()
+
         appConfiguration.init(application, AppConfiguration.REGION_US_SOUTH, expectedGuid, expectedApiKey)
         appConfiguration.setCollectionId(getString(R.string.collectionid))
 
         appConfiguration.enableDebug(true)
 
-        appConfiguration.registerFeaturesUpdateListener(object :
-            FeaturesUpdateListener {
-            override fun onFeaturesUpdate() {
+        appConfiguration.registerConfigurationsUpdateListener(object :
+            ConfigurationUpdateListener {
+            override fun onConfigurationsUpdate() {
                 nDialog?.visibility = View.INVISIBLE
                 println(appConfiguration.getFeature("featurebool"))
                 println(appConfiguration.getFeatures())
@@ -101,19 +112,30 @@ class MainActivity : AppCompatActivity() {
 
         val appConfiguration = AppConfiguration.getInstance()
         val feature: Feature? = appConfiguration.getFeature(featureId)
-        if (feature?.getFeatureDataType() === Feature.FeatureType.NUMERIC) {
+        if (feature?.getFeatureDataType() === ConfigurationType.NUMERIC) {
             textView!!.text = featureId + "value is :" + feature.getCurrentValue("pvqr", identityAttributes)
             constraintLayout!!.setBackgroundColor(Color.RED)
-        } else if (feature?.getFeatureDataType() === Feature.FeatureType.BOOLEAN) {
+        } else if (feature?.getFeatureDataType() === ConfigurationType.BOOLEAN) {
             val value = feature.getCurrentValue("pvqr", identityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.GREEN)
-        } else if (feature?.getFeatureDataType() === Feature.FeatureType.STRING) {
+        } else if (feature?.getFeatureDataType() === ConfigurationType.STRING) {
             val value = feature.getCurrentValue("pvqr", identityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.YELLOW)
         }
+    }
+
+    private fun buttonActionProperty(propertyId : String) {
+
+        nDialog?.visibility = View.INVISIBLE
+
+        val appConfiguration = AppConfiguration.getInstance()
+        val property: Property? = appConfiguration.getProperty(propertyId)
+
+        textView!!.text = propertyId + "value is :" + property!!.getCurrentValue("pvqr", identityAttributes)
+        constraintLayout!!.setBackgroundColor(Color.RED)
     }
 }
