@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">Sample App</string>
+    <string name="app_name">sampleapp</string>
     <string name="number_feature">Get Number Feature</string>
     <string name="String_feature">Get String Feature</string>
     <string name="bool_feature">Get Boolean Feature</string>
     <string name="property">Get Property</string>
     <string name="apikey"></string>
     <string name="guid"></string>
-    <string name="collectionid"></string>
+    <string name="collectionId"></string>
+    <string name="environmentId"></string>
 </resources>

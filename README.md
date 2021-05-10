@@ -47,7 +47,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         repositories {
-            jcenter()
+            mavenCentral()
         }
         ```
 
@@ -56,9 +56,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.2.0"
-	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
-            implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:2.0.0"
 	    }
         ```
         
@@ -80,8 +78,9 @@ Choose to integrate the AppConfiguration Android client SDK package using either
                           "guid",
                           "apikey")
 
-    //To start the configuration fetching operation, set the collectionId in the following way.
-     appConfiguration.setCollectionId("collectionId")
+    //To start the configuration fetching operation, set the collectionId and environmentId in the following way.
+    appConfiguration.setContext("collectionId","environmentId")
+
  
 ```
 
@@ -92,6 +91,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
+- environmentId : Id of the environment created in App Configuration service instance under the **Environments** section.
 
 ## Set listener for feature or property data changes
 
@@ -122,12 +122,12 @@ val features: HashMap<String, Feature>? = appConfiguration.getFeatures();
 
 ```kt
 
-JSONObject identityAttributes = new JSONObject();
+val identityAttributes = JSONObject()
 try {
-    identityAttributes.put("city", "Bangalore");
-    identityAttributes.put("country", "India");
-} catch (JSONException e) {
-    e.printStackTrace();
+    identityAttributes.put("city", "Bangalore")
+    identityAttributes.put("country", "India")
+} catch (e: JSONException) {
+    e.printStackTrace()
 }
 
 
@@ -219,16 +219,14 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         repositories {
-            jcenter()
+            mavenCentral()
         }
         ```
   2. Add IBM Cloud AppConfiguration Android client SDK dependency to Module level `build.gradle` file.
 
         ```java
         dependencies {
-	        implementation "com.ibm.appconfiguration.android:lib:1.2.0"
-	        implementation "com.squareup.okhttp3:okhttp:4.9.0"
-            implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.0"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:2.0.0"
 	    }
         ```
     
@@ -261,8 +259,8 @@ Choose to integrate the AppConfiguration Android client SDK package using either
       AppConfiguration appConfiguration = AppConfiguration.getInstance();
       appConfiguration.init(getApplication(), AppConfiguration.REGION_US_SOUTH, "guid", "apikey");
 
-      // To start the configuration fetching operation, set the collectionId in the following way.
-      appConfiguration.setCollectionId("collectionId");
+      // To start the configuration fetching operation, set the collectionId and environmentId in the following way.
+      appConfiguration.setContext("collectionId", "environmentId");
 ```
 
 - region : Region name where the service instance is created. Use
@@ -272,6 +270,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
+- environmentId : Id of the environment created in App Configuration service instance under the **Environments** section.
 
 
 ## Listen to the feature changes.
