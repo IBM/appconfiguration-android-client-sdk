@@ -60,15 +60,11 @@ class Rule(rules: JSONObject) {
             "is" -> {
                 if (key::class == value::class) {
                     result = key.equals(value)
-                } else if (key !is Number || value !is Number) {
-                    if (value is String && key is Number) {
-                        key = key.toFloat()
-                        value = value.toFloat()
-                        result = key.equals(value)
-                    } else if (value is Number && key is String) {
-                        key = key.toFloat()
-                        value = value.toFloat()
-                        result = key.equals(value)
+                } else {
+                    try {
+                        result = value.toString() == key.toString()
+                    } catch (error: java.lang.Exception) {
+                        Logger.error(error.localizedMessage)
                     }
                 }
             }
@@ -109,16 +105,16 @@ class Rule(rules: JSONObject) {
 
     /**
      * Method to evaluate the Feature based on the rules
-     * @param clientAttributes A JSONObject containing all the user attributes.
+     * @param entityAttributes A JSONObject containing all the user attributes.
      * @return Boolean
      */
-     fun evaluateRule(clientAttributes: JSONObject): Boolean {
+     fun evaluateRule(entityAttributes: JSONObject): Boolean {
         var key: Any? = null
         var result = false
 
-        if (clientAttributes.has(attribute_name)) {
+        if (entityAttributes.has(attribute_name)) {
             try {
-                key = clientAttributes[attribute_name]
+                key = entityAttributes[attribute_name]
             } catch (e: JSONException) {
                 Logger.error("${e.message}")
             }

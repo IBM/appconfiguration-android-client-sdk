@@ -73,7 +73,7 @@ internal class Metering {
         guid: String,
         environmentId: String,
         collectionId: String,
-        identityId: String,
+        entityId: String,
         segmentId: String,
         featureId: String?,
         propertyId: String?
@@ -102,61 +102,61 @@ internal class Metering {
                 if (meteringData[guid]!![environmentId]!!.containsKey(collectionId)) {
                     if (meteringData[guid]!![environmentId]!![collectionId]!!.containsKey(modifyKey)) {
                         if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!!.containsKey(
-                                identityId
+                                entityId
                             )) {
-                            if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId]!!.containsKey(
+                            if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!!.containsKey(
                                     segmentId
                                 )
                             ) {
                                 hasData = true
-                                meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId]!![segmentId]!!["evaluation_time"] = currentDate
-                                val count = meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId]!![segmentId]!!["count"] as Int
-                                meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId]!![segmentId]!!["count"] = count + 1
+                                meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId]!!["evaluation_time"] = currentDate
+                                val count = meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId]!!["count"] as Int
+                                meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId]!!["count"] = count + 1
                             }
                         } else {
                             var segmentIdMap = ConcurrentHashMap<String, HashMap<String, Any>>()
                             segmentIdMap[segmentId] = HashMap()
-                            meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId] = segmentIdMap
+                            meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId] = segmentIdMap
                         }
                     } else {
                         var segmentIdMap = ConcurrentHashMap<String, HashMap<String, Any>>()
-                        var identityIdMap =
+                        var entityIdMap =
                             ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>()
                         segmentIdMap[segmentId] = HashMap()
-                        identityIdMap[identityId] = segmentIdMap
-                        meteringData[guid]!![environmentId]!![collectionId]!![modifyKey] = identityIdMap
+                        entityIdMap[entityId] = segmentIdMap
+                        meteringData[guid]!![environmentId]!![collectionId]!![modifyKey] = entityIdMap
                     }
                 } else {
                     var segmentIdMap = ConcurrentHashMap<String, HashMap<String, Any>>()
-                    var identityIdMap =
+                    var entityIdMap =
                         ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>()
                     var featureIdMap =
                         ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>()
                     segmentIdMap[segmentId] = HashMap()
-                    identityIdMap[identityId] = segmentIdMap
-                    featureIdMap[modifyKey] = identityIdMap
+                    entityIdMap[entityId] = segmentIdMap
+                    featureIdMap[modifyKey] = entityIdMap
                     meteringData[guid]!![environmentId]!![collectionId] = featureIdMap
                 }
 
             } else {
 
                 var segmentIdMap = ConcurrentHashMap<String, HashMap<String, Any>>()
-                var identityIdMap =
+                var entityIdMap =
                     ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>()
                 var featureIdMap =
                     ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>()
                 var collectionIdMap =
                     ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>>()
                 segmentIdMap[segmentId] = HashMap()
-                identityIdMap[identityId] = segmentIdMap
-                featureIdMap[modifyKey] = identityIdMap
+                entityIdMap[entityId] = segmentIdMap
+                featureIdMap[modifyKey] = entityIdMap
                 collectionIdMap[collectionId] = featureIdMap
                 meteringData[guid]!![environmentId] = collectionIdMap
 
             }
         } else {
             var segmentIdMap = ConcurrentHashMap<String, HashMap<String, Any>>()
-            var identityIdMap =
+            var entityIdMap =
                 ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>()
             var featureIdMap =
                 ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>()
@@ -165,15 +165,15 @@ internal class Metering {
             var environmentIdMap =
                 ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>>>()
             segmentIdMap[segmentId] = HashMap()
-            identityIdMap[identityId] = segmentIdMap
-            featureIdMap[modifyKey] = identityIdMap
+            entityIdMap[entityId] = segmentIdMap
+            featureIdMap[modifyKey] = entityIdMap
             collectionIdMap[collectionId] = featureIdMap
             environmentIdMap[environmentId] = collectionIdMap
             meteringData[guid] = environmentIdMap
         }
 
         if (!hasData) {
-            meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![identityId]!![segmentId] = featureJson
+            meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId] = featureJson
         }
 
     }
@@ -202,13 +202,13 @@ internal class Metering {
 
                     for (meterEntry in collectionEntry.value) {
 
-                        for (identityEntry in meterEntry.value) {
+                        for (entityEntry in meterEntry.value) {
 
-                            for (segmentEntry in identityEntry.value) {
+                            for (segmentEntry in entityEntry.value) {
 
                                 val usages = JSONObject()
                                 usages.put(key, meterEntry.key)
-                                usages.put("identity_id", identityEntry.key)
+                                usages.put("entity_id", entityEntry.key)
                                 usages.put(
                                     "segment_id",
                                     if (segmentEntry.key === "$\$null$$") JSONObject.NULL else segmentEntry.key

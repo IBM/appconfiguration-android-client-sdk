@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     var nDialog: ProgressBar? = null
     var textView: TextView? = null
     var constraintLayout: ConstraintLayout? = null
-    val identityAttributes = JSONObject()
+    val entityAttributes = JSONObject()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         textView = findViewById(R.id.textView)
 
         try {
-            identityAttributes.put("cityRadius", "40")
-            identityAttributes.put("radius", "50")
+            entityAttributes.put("cityRadius", "40")
+            entityAttributes.put("radius", "50")
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -111,15 +111,15 @@ class MainActivity : AppCompatActivity() {
         val appConfiguration = AppConfiguration.getInstance()
         val feature: Feature? = appConfiguration.getFeature(featureId)
         if (feature?.getFeatureDataType() === ConfigurationType.NUMERIC) {
-            textView!!.text = featureId + "value is :" + feature.getCurrentValue("pvqr", identityAttributes)
+            textView!!.text = featureId + "value is :" + feature.getCurrentValue("pvqr", entityAttributes)
             constraintLayout!!.setBackgroundColor(Color.RED)
         } else if (feature?.getFeatureDataType() === ConfigurationType.BOOLEAN) {
-            val value = feature.getCurrentValue("pvqr", identityAttributes)
+            val value = feature.getCurrentValue("pvqr", entityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.GREEN)
         } else if (feature?.getFeatureDataType() === ConfigurationType.STRING) {
-            val value = feature.getCurrentValue("pvqr", identityAttributes)
+            val value = feature.getCurrentValue("pvqr", entityAttributes)
             println(value)
             textView!!.text = featureId + "value is :" + value
             constraintLayout!!.setBackgroundColor(Color.YELLOW)
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         val appConfiguration = AppConfiguration.getInstance()
         val property: Property? = appConfiguration.getProperty(propertyId)
 
-        textView!!.text = propertyId + "value is :" + property!!.getCurrentValue("pvqr", identityAttributes)
+        textView!!.text = propertyId + "value is :" + property!!.getCurrentValue("pvqr", entityAttributes)
         constraintLayout!!.setBackgroundColor(Color.RED)
     }
 }

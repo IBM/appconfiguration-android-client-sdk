@@ -173,21 +173,21 @@ internal class ConfigurationHandler {
     private fun recordEvaluation(
         featureId: String?,
         propertyId: String?,
-        identityId: String,
+        entityId: String,
         segmentId: String
     ) {
         metering?.addMetering(
             AppConfiguration.getInstance().getGuid(),
             this.environmentId,
             this.collectionId,
-            identityId,
+            entityId,
             segmentId,
             featureId,
             propertyId
         )
     }
 
-    fun propertyEvaluation(property: Property, identityId: String, identityAttributes: JSONObject): Any? {
+    fun propertyEvaluation(property: Property, entityId: String, entityAttributes: JSONObject): Any? {
 
         var resultDict = JSONObject()
         resultDict.put("evaluated_segment_id", ConfigConstants.DEFAULT_SEGMENT_ID)
@@ -195,14 +195,14 @@ internal class ConfigurationHandler {
 
         try {
 
-            if (identityAttributes.length() == 0) {
+            if (entityAttributes.length() == 0) {
                 return property.getPropertyValue()
             }
 
             val segmentRules = property.getSegmentRules()
             return if (segmentRules.length() > 0) {
                 val rulesMap: HashMap<Int, SegmentRules> = parseRules(segmentRules)
-                resultDict = evaluateRules(rulesMap, identityAttributes, null, property)
+                resultDict = evaluateRules(rulesMap, entityAttributes, null, property)
                 resultDict["value"]
             } else {
                 property.getPropertyValue()
@@ -212,13 +212,13 @@ internal class ConfigurationHandler {
             this.recordEvaluation(
                 null,
                 propertyId,
-                identityId,
+                entityId,
                 resultDict.getString("evaluated_segment_id")
             )
         }
     }
 
-    fun featureEvaluation(feature: Feature, identityId: String, identityAttributes: JSONObject): Any? {
+    fun featureEvaluation(feature: Feature, entityId: String, entityAttributes: JSONObject): Any? {
 
         var resultDict = JSONObject()
         resultDict.put("evaluated_segment_id", ConfigConstants.DEFAULT_SEGMENT_ID)
@@ -227,13 +227,13 @@ internal class ConfigurationHandler {
         try {
             if (feature.isEnabled()) {
 
-                if (identityAttributes.length() == 0) {
+                if (entityAttributes.length() == 0) {
                     return feature.getFeatureEnabledValue()
                 }
                 val segmentRules = feature.getSegmentRules()
                 return if (segmentRules.length() > 0) {
                     val rulesMap: HashMap<Int, SegmentRules> = parseRules(segmentRules)
-                    resultDict = this.evaluateRules(rulesMap, identityAttributes, feature, null)
+                    resultDict = this.evaluateRules(rulesMap, entityAttributes, feature, null)
                     resultDict["value"]
                 } else {
                     feature.getFeatureEnabledValue()
@@ -247,7 +247,7 @@ internal class ConfigurationHandler {
             this.recordEvaluation(
                 featureId,
                 null,
-                identityId,
+                entityId,
                 resultDict.getString("evaluated_segment_id")
             )
         }
@@ -255,7 +255,7 @@ internal class ConfigurationHandler {
 
     private fun evaluateRules(
         rulesMap: HashMap<Int, SegmentRules>,
-        identityAttributes: JSONObject,
+        entityAttributes: JSONObject,
         feature: Feature?,
         property: Property?
     ): JSONObject {
@@ -279,7 +279,7 @@ internal class ConfigurationHandler {
 
                             val segmentKey = segments.getString(innerLevel)
 
-                            if (evaluateSegment(segmentKey, identityAttributes)) {
+                            if (evaluateSegment(segmentKey, entityAttributes)) {
                                 resultDict.put("evaluated_segment_id", segmentKey)
                                 if (segmentRule.getValue() == "\$default") {
                                     if (feature != null) {
@@ -309,10 +309,10 @@ internal class ConfigurationHandler {
         return resultDict
     }
 
-    private fun evaluateSegment(segmentKey: String, identityAttributes: JSONObject): Boolean {
+    private fun evaluateSegment(segmentKey: String, entityAttributes: JSONObject): Boolean {
         if (segmentMap.containsKey(segmentKey)) {
             val segment = segmentMap[segmentKey]
-            return segment!!.evaluateRule(identityAttributes)
+            return segment!!.evaluateRule(entityAttributes)
         }
         return false
     }

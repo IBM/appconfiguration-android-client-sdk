@@ -30,7 +30,7 @@ class MeteringTest {
             "guid1",
             "environment_id1",
             "collectionId1",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             "featureId1",
             null
@@ -39,7 +39,7 @@ class MeteringTest {
             "guid2",
             "environment_id1",
             "collectionId2",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             "featureId1",
             null
@@ -48,7 +48,7 @@ class MeteringTest {
             "guid1",
             "environment_id1",
             "collectionId2",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             "featureId1",
             null
@@ -58,7 +58,7 @@ class MeteringTest {
             "guid1",
             "environment_id2",
             "collectionId1",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             null,
             "property_id1"
@@ -67,7 +67,7 @@ class MeteringTest {
             "guid2",
             "environment_id2",
             "collectionId2",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             null,
             "property_id1"
@@ -76,7 +76,7 @@ class MeteringTest {
             "guid1",
             "environment_id2",
             "collectionId2",
-            "identityId1",
+            "entityId1",
             "segmentId1",
             null,
             "property_id1"
@@ -86,7 +86,7 @@ class MeteringTest {
             "guid2",
             "environment_id2",
             "collectionId2",
-            "identityId1",
+            "entityId1",
             "$\$null$$",
             null,
             "property_id1"

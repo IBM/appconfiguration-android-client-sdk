@@ -25,7 +25,7 @@ object ConfigMessages {
     const val ENVIRONMENT_ID_VALUE_ERROR = "Provide a valid environmentId in App Configuration setContext method"
     const val COLLECTION_ID_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization. Please check the initialization section for errors."
     const val COLLECTION_INIT_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization and setContext operation. Please check the initialization and setContext sections for errors."
-    const val IDENTITY_UPDATE_ERROR = "An `IdentityId` value should be passed for this method."
+    const val ENTITY_UPDATE_ERROR = "An `entityId` value should be passed for this method."
     const val FEATURE_INVALID = "Invalid featureId - "
     const val PROPERTY_INVALID = "Invalid propertyId - "
     const val CONFIG_API_ERROR = "Invalid configuration. Verify the collectionId, environmentId, apikey, guid and region."

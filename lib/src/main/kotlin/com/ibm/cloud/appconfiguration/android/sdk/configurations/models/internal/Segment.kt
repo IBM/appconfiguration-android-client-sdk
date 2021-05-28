@@ -43,10 +43,10 @@ class Segment(segments: JSONObject) {
 
     /**
      * Method to evaluate the Feature based on the rules
-     * @param clientAttributes A JSONObject containing all the user attributes.
+     * @param entityAttributes A JSONObject containing all the user attributes.
      * @return Boolean
      */
-    fun evaluateRule(clientAttributes: JSONObject): Boolean {
+    fun evaluateRule(entityAttributes: JSONObject): Boolean {
         for (index in 0 until rules.length()) {
             try {
                 val rule =
@@ -54,7 +54,7 @@ class Segment(segments: JSONObject) {
                         rules.getJSONObject(index)
                     )
 
-                if (!rule.evaluateRule(clientAttributes)) {
+                if (!rule.evaluateRule(entityAttributes)) {
                     return false
                 }
             } catch (e: JSONException) {
