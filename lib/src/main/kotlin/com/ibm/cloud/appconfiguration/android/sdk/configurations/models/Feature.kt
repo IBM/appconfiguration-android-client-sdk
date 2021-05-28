@@ -76,14 +76,14 @@ class Feature(featureList: JSONObject) {
     }
 
     /** Get current value of the Feature. Pass the Data type. */
-    fun getCurrentValue(identityId: String, identityAttributes: JSONObject = JSONObject()): Any? {
+    fun getCurrentValue(entityId: String, entityAttributes: JSONObject = JSONObject()): Any? {
 
-        if(identityId == "") {
-            Logger.error(ConfigMessages.IDENTITY_UPDATE_ERROR)
+        if(entityId == "") {
+            Logger.error(ConfigMessages.ENTITY_UPDATE_ERROR)
             return null
         }
 
         val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
-        return configurationHandler.featureEvaluation(this, identityId, identityAttributes)
+        return configurationHandler.featureEvaluation(this, entityId, entityAttributes)
     }
 }

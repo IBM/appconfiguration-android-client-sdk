@@ -62,14 +62,14 @@ class Property(propertyList: JSONObject) {
     fun getPropertyValue(): Any { return value }
 
     /** Get current value of the Property. Pass the Data type. */
-    fun getCurrentValue(identityId: String, identityAttributes: JSONObject = JSONObject()): Any? {
+    fun getCurrentValue(entityId: String, entityAttributes: JSONObject = JSONObject()): Any? {
 
-        if(identityId == "") {
-            Logger.error(ConfigMessages.IDENTITY_UPDATE_ERROR)
+        if(entityId == "") {
+            Logger.error(ConfigMessages.ENTITY_UPDATE_ERROR)
             return null
         }
 
         val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
-        return configurationHandler.propertyEvaluation(this, identityId, identityAttributes)
+        return configurationHandler.propertyEvaluation(this, entityId, entityAttributes)
     }
 }
