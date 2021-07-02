@@ -18,7 +18,9 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
 import com.ibm.cloud.appconfiguration.android.sdk.AppConfiguration
 
-
+/**
+ * Class consisting of methods that constructs all the URL's required by the SDK.
+ */
 internal class URLBuilder {
 
     private val _path = "/feature/v1/instances/"
@@ -28,6 +30,10 @@ internal class URLBuilder {
 
     companion object Factory {
         private var instance: URLBuilder? = null
+
+        /**
+         * @return instance of [URLBuilder]
+         */
         fun getInstance(): URLBuilder {
             if (instance == null)
                 instance =
@@ -36,6 +42,12 @@ internal class URLBuilder {
         }
     }
 
+    /**
+     * Initialize values
+     *
+     * @param collectionId collection id
+     * @param environmentId environment id
+     */
     fun init(collectionId: String, environmentId: String) {
         httpBase = ConfigConstants.DEFAULT_HTTP_TYPE
         if (AppConfiguration.overrideServerHost != null) {
@@ -48,17 +60,29 @@ internal class URLBuilder {
             .getGuid() + "/collections/" + collectionId + "/config?environment_id=" + environmentId
     }
 
+    /**
+     * Return the Configuration URL.
+     *
+     * @return configuration url
+     */
     fun getConfigUrl(): String {
         return httpBase
     }
 
-    fun getMeteringUrl(instanceGuid: String): String? {
+    /**
+     * Return the metering URL.
+     *
+     * @param instanceGuid guid of App Configuration service instance
+     * @return metering url
+     */
+    fun getMeteringUrl(instanceGuid: String): String {
 
         var base = ConfigConstants.DEFAULT_HTTP_TYPE
-       if (AppConfiguration.overrideServerHost != null) {
-           base = AppConfiguration.overrideServerHost.toString() + _service
+        if (AppConfiguration.overrideServerHost != null) {
+            base = AppConfiguration.overrideServerHost.toString() + _service
         } else {
-           base += AppConfiguration.getInstance().getRegion() + ConfigConstants.DEFAULT_BASE_URL + _service
+            base += AppConfiguration.getInstance()
+                .getRegion() + ConfigConstants.DEFAULT_BASE_URL + _service
         }
         return "$base$_events$instanceGuid/usage"
     }

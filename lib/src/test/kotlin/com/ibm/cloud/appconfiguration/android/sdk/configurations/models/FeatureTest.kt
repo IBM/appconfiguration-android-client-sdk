@@ -18,7 +18,7 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.models
 
 import org.json.JSONArray
 import org.json.JSONObject
-import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Test
 
 class FeatureTest {
@@ -50,30 +50,40 @@ class FeatureTest {
     @Test
     fun testStringFeature() {
         setUpStringFeature(ConfigurationType.STRING, "unknown user", "Org user", true)
-        Assert.assertEquals(sut!!.getFeatureDataType(), ConfigurationType.STRING)
-        Assert.assertEquals(sut!!.getFeatureName(), "defaultFeature")
-        Assert.assertEquals(sut!!.getFeatureId(), "defaultfeature")
-        Assert.assertEquals(sut!!.isEnabled(), true)
-        Assert.assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as String?, "Org user")
+        assertEquals(sut!!.getFeatureDataType(), ConfigurationType.STRING)
+        assertEquals(sut!!.getFeatureName(), "defaultFeature")
+        assertEquals(sut!!.getFeatureId(), "defaultfeature")
+        assertEquals(sut!!.isEnabled(), true)
+        assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as String?, "Org user")
+        assertEquals(sut!!.disabledValue, "unknown user")
+        assertEquals(sut!!.enabledValue, "Org user")
     }
 
     @Test
     fun testBooleanFeature() {
         setUpStringFeature(ConfigurationType.BOOLEAN, false, true, true)
-        Assert.assertEquals(sut!!.getFeatureDataType(), ConfigurationType.BOOLEAN)
-        Assert.assertEquals(sut!!.getFeatureName(), "defaultFeature")
-        Assert.assertEquals(sut!!.getFeatureId(), "defaultfeature")
-        Assert.assertEquals(sut!!.isEnabled(), true)
-        Assert.assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as Boolean?, true)
+        assertEquals(sut!!.getFeatureDataType(), ConfigurationType.BOOLEAN)
+        assertEquals(sut!!.getFeatureName(), "defaultFeature")
+        assertEquals(sut!!.getFeatureId(), "defaultfeature")
+        assertEquals(sut!!.isEnabled(), true)
+        assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as Boolean?, true)
+        assertNull(sut!!.getCurrentValue("", JSONObject()))
+
     }
 
     @Test
     fun testNumericFeature() {
         setUpStringFeature(ConfigurationType.NUMERIC, 20, 50, false)
-        Assert.assertEquals(sut!!.getFeatureDataType(), ConfigurationType.NUMERIC)
-        Assert.assertEquals(sut!!.getFeatureName(), "defaultFeature")
-        Assert.assertEquals(sut!!.getFeatureId(), "defaultfeature")
-        Assert.assertEquals(sut!!.isEnabled(), false)
-        Assert.assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()), 20)
+        assertEquals(sut!!.getFeatureDataType(), ConfigurationType.NUMERIC)
+        assertEquals(sut!!.getFeatureName(), "defaultFeature")
+        assertEquals(sut!!.getFeatureId(), "defaultfeature")
+        assertEquals(sut!!.isEnabled(), false)
+        assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()), 20)
+    }
+
+    @Test
+    fun testEmptyJson() {
+        sut = Feature(JSONObject())
+        assert(sut!!.getFeatureName() == "")
     }
 }

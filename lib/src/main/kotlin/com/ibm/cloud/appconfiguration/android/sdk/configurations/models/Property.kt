@@ -46,25 +46,53 @@ class Property(propertyList: JSONObject) {
         }
     }
 
-    /** Get the Property name */
+    /**
+     * Get the Property name.
+     *
+     * @return property name
+     */
     fun getPropertyName(): String = name
 
-    /** Get the Property ID */
+    /**
+     * Get the Property Id.
+     *
+     * @return property id
+     */
     fun getPropertyId(): String = propertyId
 
-    /** Get the Property dataType */
+    /**
+     * Get the Property data type.
+     *
+     * @return string named BOOLEAN/STRING/NUMERIC
+     */
     fun getPropertyDataType(): ConfigurationType = type
 
-    /** Get segment rules from the Property */
+    /**
+     * Get the rules of the Segment targeted.
+     *
+     * @return segment rules JSON
+     */
     fun getSegmentRules(): JSONArray = segmentRules
 
-    /** Get value from the Property */
-    fun getPropertyValue(): Any { return value }
+    /**
+     * Get the default property value.
+     *
+     * @return default property value
+     */
+    fun getPropertyValue(): Any {
+        return value
+    }
 
-    /** Get current value of the Property. Pass the Data type. */
+    /**
+     * Get the evaluated value of the property. Pass the Data type
+     *
+     * @param entityId id of the entity
+     * @param entityAttributes entity attributes JSON object
+     * @return evaluated value
+     */
     fun getCurrentValue(entityId: String, entityAttributes: JSONObject = JSONObject()): Any? {
 
-        if(entityId == "") {
+        if (entityId == "") {
             Logger.error(ConfigMessages.ENTITY_UPDATE_ERROR)
             return null
         }

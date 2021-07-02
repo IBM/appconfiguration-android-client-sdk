@@ -16,15 +16,76 @@
 
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
+import android.content.Context
+import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.json.JSONArray
+import org.json.JSONObject
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 
 class MeteringTest {
+
+
+    private var server = MockWebServer()
+
+    @Before
+    fun setup() {
+        server.start(8080)
+
+        val response = MockResponse().setResponseCode(202)
+            .setBody("{\"status\":\"success\"}")
+        server.enqueue(response)
+    }
+
+    @After
+    fun tearDown() {
+        server.shutdown()
+    }
+
     @Test
-    public fun testStringMetering(){
+    fun testMeteringSplit() {
+
+        val usages = JSONObject()
+        usages.put("feature_id", "featureId1")
+        usages.put("evaluation_time", "2021-04-15T11:07:56.013Z")
+        usages.put("entity_id", "entityId1")
+        usages.put("count", 1)
+        usages.put("segment_id", "segmentId1")
+
+        val array = JSONArray()
+
+        for (i in 0..29) {
+            array.put(usages)
+        }
+
+        val data = JSONObject()
+
+        data.put("collection_id", "collection_id")
+        data.put("environment_id", "environment_id")
+        data.put("usages", array)
+
+        runBlocking {
+            val result: JSONArray = Metering.getInstance().sendSplitMetering("guid", data, 30)
+            assertEquals(result.length(), 2)
+            assertEquals((result[0] as JSONObject).getJSONArray("usages").length(), 25)
+            assertEquals((result[1] as JSONObject).getJSONArray("usages").length(), 5)
+        }
+
+    }
+
+    /** TODO: Modification required */
+    @Test(expected = IllegalArgumentException::class)
+    fun testStringMetering() {
         val metering = Metering.getInstance()
+        val applicationContext = Mockito.mock(Context::class.java)
+
+        metering.init(applicationContext)
 
         metering.addMetering(
             "guid1",
@@ -35,6 +96,46 @@ class MeteringTest {
             "featureId1",
             null
         )
+
+        metering.addMetering(
+            "guid1",
+            "environment_id2",
+            "collectionId1",
+            "entityId1",
+            "segmentId1",
+            "featureId1",
+            null
+        )
+        metering.addMetering(
+            "guid1",
+            "environment_id1",
+            "collectionId1",
+            "entityId1",
+            "segmentId1",
+            "featureId1",
+            null
+        )
+
+        metering.addMetering(
+            "guid1",
+            "environment_id1",
+            "collectionId1",
+            "entityId1",
+            "segmentId1",
+            "featureId2",
+            null
+        )
+
+        metering.addMetering(
+            "guid1",
+            "environment_id1",
+            "collectionId1",
+            "entityId2",
+            "segmentId1",
+            "featureId2",
+            null
+        )
+
         metering.addMetering(
             "guid2",
             "environment_id1",
@@ -92,9 +193,10 @@ class MeteringTest {
             "property_id1"
         )
 
-        val result: HashMap<String, JSONArray> = metering.sendMetering()
-        print(result)
-        assertEquals(4, result["guid1"]!!.length())
+        /** TODO: Needs modification */
+        metering.sendMetering()
+//        val result: HashMap<String, JSONArray> = metering.sendMetering()
+//        assertEquals(5, result["guid1"]!!.length())
     }
 
 }

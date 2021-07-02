@@ -16,6 +16,7 @@
 
 package com.ibm.cloud.sampleapp
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -34,9 +35,9 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     var nDialog: ProgressBar? = null
-    var textView: TextView? = null
-    var constraintLayout: ConstraintLayout? = null
-    val entityAttributes = JSONObject()
+    private var textView: TextView? = null
+    private var constraintLayout: ConstraintLayout? = null
+    private val entityAttributes = JSONObject()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,11 +90,17 @@ class MainActivity : AppCompatActivity() {
         val expectedGuid = getString(R.string.guid)
 
         val appConfiguration = AppConfiguration.getInstance()
-        appConfiguration.init(application, AppConfiguration.REGION_US_SOUTH, expectedGuid, expectedApiKey)
-        appConfiguration.setContext(getString(R.string.collectionId),getString(R.string.environmentId))
-
         appConfiguration.enableDebug(true)
-
+        appConfiguration.init(
+            application,
+            AppConfiguration.REGION_EU_GB,
+            expectedGuid,
+            expectedApiKey
+        )
+        appConfiguration.setContext(
+            getString(R.string.collectionId),
+            getString(R.string.environmentId)
+        )
         appConfiguration.registerConfigurationUpdateListener(object : ConfigurationUpdateListener {
 
             override fun onConfigurationUpdate() {
@@ -104,36 +111,46 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun buttonAction(featureId : String) {
+    @SuppressLint("SetTextI18n")
+    private fun buttonAction(featureId: String) {
 
         nDialog?.visibility = View.INVISIBLE
 
         val appConfiguration = AppConfiguration.getInstance()
         val feature: Feature? = appConfiguration.getFeature(featureId)
-        if (feature?.getFeatureDataType() === ConfigurationType.NUMERIC) {
-            textView!!.text = featureId + "value is :" + feature.getCurrentValue("pvqr", entityAttributes)
-            constraintLayout!!.setBackgroundColor(Color.RED)
-        } else if (feature?.getFeatureDataType() === ConfigurationType.BOOLEAN) {
-            val value = feature.getCurrentValue("pvqr", entityAttributes)
-            println(value)
-            textView!!.text = featureId + "value is :" + value
-            constraintLayout!!.setBackgroundColor(Color.GREEN)
-        } else if (feature?.getFeatureDataType() === ConfigurationType.STRING) {
-            val value = feature.getCurrentValue("pvqr", entityAttributes)
-            println(value)
-            textView!!.text = featureId + "value is :" + value
-            constraintLayout!!.setBackgroundColor(Color.YELLOW)
+        when {
+            feature?.getFeatureDataType() === ConfigurationType.NUMERIC -> {
+                textView!!.text =
+                    featureId + "value is :" + feature.getCurrentValue("pvqr", entityAttributes)
+                constraintLayout!!.setBackgroundColor(Color.RED)
+            }
+            feature?.getFeatureDataType() === ConfigurationType.BOOLEAN -> {
+                val value = feature.getCurrentValue("pvqr", entityAttributes)
+                println(value)
+                textView!!.text = featureId + "value is :" + value
+                constraintLayout!!.setBackgroundColor(Color.GREEN)
+            }
+            feature?.getFeatureDataType() === ConfigurationType.STRING -> {
+                val value = feature.getCurrentValue("pvqr", entityAttributes)
+                println(value)
+                textView!!.text = featureId + "value is :" + value
+                constraintLayout!!.setBackgroundColor(Color.YELLOW)
+            }
         }
     }
 
-    private fun buttonActionProperty(propertyId : String) {
+    @SuppressLint("SetTextI18n")
+    private fun buttonActionProperty(propertyId: String) {
 
         nDialog?.visibility = View.INVISIBLE
 
         val appConfiguration = AppConfiguration.getInstance()
         val property: Property? = appConfiguration.getProperty(propertyId)
 
-        textView!!.text = propertyId + "value is :" + property!!.getCurrentValue("pvqr", entityAttributes)
+        if (property != null) {
+            textView!!.text =
+                propertyId + "value is :" + property.getCurrentValue("pvqr", entityAttributes)
+        }
         constraintLayout!!.setBackgroundColor(Color.RED)
     }
 }

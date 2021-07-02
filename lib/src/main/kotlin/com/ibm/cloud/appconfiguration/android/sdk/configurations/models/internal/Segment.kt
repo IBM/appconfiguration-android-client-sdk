@@ -27,7 +27,7 @@ import org.json.JSONObject
  */
 class Segment(segments: JSONObject) {
 
-    lateinit var  name: String
+    lateinit var name: String
     lateinit var segment_id: String
     lateinit var rules: JSONArray
 

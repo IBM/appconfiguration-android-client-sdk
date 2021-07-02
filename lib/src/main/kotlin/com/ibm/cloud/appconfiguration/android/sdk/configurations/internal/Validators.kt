@@ -19,6 +19,12 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
 internal object Validators {
 
+    /**
+     * Validate a string.
+     *
+     * @param value a string
+     * @return `true` if given value is string. Else return `false`
+     */
     fun validateString(value: String?): Boolean {
         return !(value == null || value.isEmpty() || value == "")
     }

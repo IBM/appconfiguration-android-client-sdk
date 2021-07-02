@@ -56,7 +56,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.1.0"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.1.1"
 	    }
         ```
         
@@ -247,7 +247,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.1.0"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.1.1"
 	    }
         ```
     

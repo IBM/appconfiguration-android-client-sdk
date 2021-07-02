@@ -16,11 +16,16 @@
 
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
+/**
+ * Constants used by the SDK
+ */
 object ConfigConstants {
     const val DEFAULT_SEGMENT_ID = "\$\$null\$\$"
     const val REQUEST_SUCCESS_200 = 200
     const val REQUEST_SUCCESS_299 = 299
     const val DEFAULT_HTTP_TYPE = "https://"
     const val DEFAULT_BASE_URL = ".apprapp.cloud.ibm.com"
+    const val DEFAULT_IAM_DEV_STAGE_URL = "iam.test.cloud.ibm.com"
+    const val SERVICE_NAME = "AppConfiguration"
     const val DEFAULT_USAGE_LIMIT = 25
 }

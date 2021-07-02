@@ -18,7 +18,7 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.models
 
 import org.json.JSONArray
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 
 
@@ -48,6 +48,7 @@ class PropertyTest {
         assertEquals(sut.getPropertyDataType(), ConfigurationType.STRING)
         assertEquals(sut.getPropertyName(), "defaultProperty")
         assertEquals(sut.getPropertyId(), "defaultproperty")
+        assertNull(sut.getCurrentValue("", JSONObject()))
     }
 
     @Test
@@ -66,4 +67,11 @@ class PropertyTest {
         assertEquals(sut.getPropertyId(), "defaultproperty")
         assertEquals(sut.getCurrentValue("d"), 20)
     }
+
+    @Test
+    fun testEmptyJson() {
+        sut = Property(JSONObject())
+        assert(sut.getPropertyName() == "")
+    }
+
 }

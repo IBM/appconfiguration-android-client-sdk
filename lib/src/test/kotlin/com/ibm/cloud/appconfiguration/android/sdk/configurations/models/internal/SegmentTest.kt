@@ -65,4 +65,10 @@ class SegmentTest {
             Assert.assertFalse(true)
         }
     }
+
+    @Test
+    fun testEmptyJson() {
+        sut = Segment(JSONObject())
+    }
+
 }
