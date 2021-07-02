@@ -17,7 +17,9 @@
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
 import android.content.Context
-import com.ibm.cloud.appconfiguration.android.sdk.core.*
+import com.ibm.cloud.appconfiguration.android.sdk.core.Logger
+import com.ibm.cloud.appconfiguration.android.sdk.core.ServiceImpl
+import com.ibm.cloud.sdk.core.http.Response
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -32,19 +34,27 @@ import kotlin.collections.HashMap
 
 private typealias meteringStore = ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, HashMap<String, Any>>>>>>>
 
+/**
+ * Class consisting of functions that stores the feature and property evaluations metrics and send the metrics
+ * to App Configuration server in intervals.
+ */
 internal class Metering {
 
     private var sendInterval: Long = 600000
     private var appContext: Context? = null
     private var urlBuilder: URLBuilder? = null
 
-    var meteringFeatureData: meteringStore = ConcurrentHashMap()
-    var meteringPropertyData: meteringStore = ConcurrentHashMap()
+    private var meteringFeatureData: meteringStore = ConcurrentHashMap()
+    private var meteringPropertyData: meteringStore = ConcurrentHashMap()
 
-    val mutex = Mutex()
+    private val mutex = Mutex()
 
     companion object Factory {
         private var instance: Metering? = null
+
+        /**
+         * @return instance of [Metering]
+         */
         fun getInstance(): Metering {
             if (instance == null)
                 instance =
@@ -69,7 +79,19 @@ internal class Metering {
         }
     }
 
-    @Synchronized fun addMetering(
+    /**
+     * Stores the feature and property evaluation metrics into hashmaps.
+     *
+     * @param guid guid of App Configuration service instance
+     * @param environmentId environment id of App Configuration service instance
+     * @param collectionId collection id
+     * @param entityId entity id
+     * @param segmentId segment id
+     * @param featureId feature id
+     * @param propertyId property id
+     */
+    @Synchronized
+    fun addMetering(
         guid: String,
         environmentId: String,
         collectionId: String,
@@ -83,7 +105,7 @@ internal class Metering {
         val featureJson: HashMap<String, Any> = HashMap()
         featureJson["count"] = 1
         val currentDate = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                Instant.now().toString()
+                Instant.now().toString().split(".").toTypedArray()[0] + "Z"
             } else {
                 SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(Date())
             }
@@ -101,13 +123,8 @@ internal class Metering {
 
                 if (meteringData[guid]!![environmentId]!!.containsKey(collectionId)) {
                     if (meteringData[guid]!![environmentId]!![collectionId]!!.containsKey(modifyKey)) {
-                        if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!!.containsKey(
-                                entityId
-                            )) {
-                            if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!!.containsKey(
-                                    segmentId
-                                )
-                            ) {
+                        if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!!.containsKey(entityId)) {
+                            if (meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!!.containsKey(segmentId)) {
                                 hasData = true
                                 meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId]!!["evaluation_time"] = currentDate
                                 val count = meteringData[guid]!![environmentId]!![collectionId]!![modifyKey]!![entityId]!![segmentId]!!["count"] as Int
@@ -225,6 +242,12 @@ internal class Metering {
 
         }
     }
+
+    /**
+     * Sends the evaluation metrics data to App Configuration billing server.
+     *
+     * @return JSON data constructed out of hashmaps
+     */
     fun sendMetering(): HashMap<String, JSONArray> {
 
         val sendFeatureData = this.meteringFeatureData
@@ -264,9 +287,10 @@ internal class Metering {
         return result
     }
 
-    private suspend fun sendSplitMetering(guid: String?, data: JSONObject, count: Int) {
+    suspend fun sendSplitMetering(guid: String?, data: JSONObject, count: Int): JSONArray {
         var lim = 0
         val subUsagesArray = data.getJSONArray("usages")
+        var result = JSONArray()
         while (lim <= count) {
             val endIndex =
                 if (lim + ConfigConstants.DEFAULT_USAGE_LIMIT >= count) count else lim + ConfigConstants.DEFAULT_USAGE_LIMIT
@@ -278,12 +302,14 @@ internal class Metering {
                 usagesArray.put(subUsagesArray[i])
             }
             collectionsMap.put("usages", usagesArray)
+            result.put(collectionsMap)
             mutex.withLock {
                 sendToServer(guid!!, collectionsMap)
             }
 
             lim += ConfigConstants.DEFAULT_USAGE_LIMIT
         }
+        return result
     }
 
     private fun sendToServer(guid: String, data: JSONObject) {
@@ -291,30 +317,20 @@ internal class Metering {
         if (appContext == null || urlBuilder == null) {
             return
         }
-        val configURL = urlBuilder!!.getMeteringUrl(guid) ?: ""
-        val apiManager: APIManager =
-            APIManager.newInstance(appContext!!, configURL, BaseRequest.POST)
-        apiManager.setJSONRequestBody(data)
-        apiManager.setResponseListener(object : ResponseListener {
-            override fun onSuccess(response: Response) {
-
-                val status = response.getStatus()
-                if (status in ConfigConstants.REQUEST_SUCCESS_200..ConfigConstants.REQUEST_SUCCESS_299) {
-                    Logger.debug("Successfully pushed the data to metering'")
-                } else {
-                    Logger.error("Error while sending the metering data. Status code is: $status. Response body: ${response.getResponseText()}")
-                }
-            }
-
-            override fun onFailure(
-                response: Response?,
-                throwable: Throwable?,
-                extendedInfo: JSONObject?
+        val meteringURL = urlBuilder!!.getMeteringUrl(guid)
+        val response: Response<String>? = ServiceImpl.getInstance().postMetering(meteringURL, data)
+        if (response != null) {
+            if (response.statusCode >= ConfigConstants.REQUEST_SUCCESS_200
+                && response.statusCode <= ConfigConstants.REQUEST_SUCCESS_299
             ) {
-                Logger.error("${extendedInfo.toString()}")
+                Logger.debug("Successfully pushed the data to metering")
+            } else {
+                Logger.error(
+                    "Error while sending the metering data. Status code is: ${response.statusCode}." +
+                            "Response body: ${response.statusMessage}"
+                )
             }
-        })
-        apiManager.execute()
+        }
     }
 
 }

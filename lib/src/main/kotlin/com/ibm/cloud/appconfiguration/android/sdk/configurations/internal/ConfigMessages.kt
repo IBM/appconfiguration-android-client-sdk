@@ -16,19 +16,30 @@
 
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
+/**
+ * Logger messages used by the SDK
+ */
 object ConfigMessages {
     private const val INIT_ERROR = "Error in initialising App Configuration SDK."
-    const val CONFIG_HANDLER_INIT_ERROR = "Invalid action in ConfigurationHandler. This action can be performed only after a successful initialization. Please check the initialization section for errors."
+    const val CONFIG_HANDLER_INIT_ERROR =
+        "Invalid action in ConfigurationHandler. This action can be performed only after a successful initialization. Please check the initialization section for errors."
     const val REGION_ERROR = INIT_ERROR + "Provide a valid region."
     const val GUID_ERROR = INIT_ERROR + "Provide a valid guid."
     const val API_KEY_ERROR = INIT_ERROR + "Provide a valid apikey."
-    const val ENVIRONMENT_ID_VALUE_ERROR = "Provide a valid environmentId in App Configuration setContext method"
-    const val COLLECTION_ID_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization. Please check the initialization section for errors."
-    const val COLLECTION_INIT_ERROR = "Invalid action in AppConfiguration. This action can be performed only after a successful initialization and setContext operation. Please check the initialization and setContext sections for errors."
+    const val ENVIRONMENT_ID_VALUE_ERROR =
+        "Provide a valid environmentId in App Configuration setContext method"
+    const val COLLECTION_ID_ERROR =
+        "Invalid action in AppConfiguration. This action can be performed only after a successful initialization. Please check the initialization section for errors."
+    const val COLLECTION_INIT_ERROR =
+        "Invalid action in AppConfiguration. This action can be performed only after a successful initialization and setContext operation. Please check the initialization and setContext sections for errors."
     const val ENTITY_UPDATE_ERROR = "An `entityId` value should be passed for this method."
     const val FEATURE_INVALID = "Invalid featureId - "
     const val PROPERTY_INVALID = "Invalid propertyId - "
-    const val CONFIG_API_ERROR = "Invalid configuration. Verify the collectionId, environmentId, apikey, guid and region."
-    const val COLLECTION_ID_VALUE_ERROR = "Provide a valid collectionId in App Configuration setContext method"
+    const val CONFIG_API_ERROR =
+        "Invalid configuration. Verify the collectionId, environmentId, apikey, guid and region."
+    const val COLLECTION_ID_VALUE_ERROR =
+        "Provide a valid collectionId in App Configuration setContext method"
+    const val APPLICATION_CONTEXT_ERROR = "Provide a valid application context"
+
 }
 

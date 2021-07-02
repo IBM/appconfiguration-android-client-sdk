@@ -59,12 +59,12 @@ class Rule(rules: JSONObject) {
             "contains" -> result = key.toString().contains(value.toString())
             "is" -> {
                 if (key::class == value::class) {
-                    result = key.equals(value)
+                    result = key == value
                 } else {
                     try {
                         result = value.toString() == key.toString()
                     } catch (error: java.lang.Exception) {
-                        Logger.error(error.localizedMessage)
+                        error.localizedMessage?.let { Logger.error(it) }
                     }
                 }
             }
@@ -104,11 +104,12 @@ class Rule(rules: JSONObject) {
     }
 
     /**
-     * Method to evaluate the Feature based on the rules
-     * @param entityAttributes A JSONObject containing all the user attributes.
-     * @return Boolean
+     * Method to evaluate the `Feature` and `Property` based on the rules.
+     *
+     * @param entityAttributes a JSONObject containing all the user attributes
+     * @return `true` if evaluation is passed against respective operator. `false` otherwise
      */
-     fun evaluateRule(entityAttributes: JSONObject): Boolean {
+    fun evaluateRule(entityAttributes: JSONObject): Boolean {
         var key: Any? = null
         var result = false
 

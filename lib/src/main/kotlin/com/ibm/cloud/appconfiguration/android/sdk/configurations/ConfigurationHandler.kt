@@ -19,19 +19,21 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations
 import android.content.Context
 import com.ibm.cloud.appconfiguration.android.sdk.AppConfiguration
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.*
-import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.FileManager
-import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.Metering
-import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.URLBuilder
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.models.Feature
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.models.Property
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.models.internal.Segment
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.models.internal.SegmentRules
-import com.ibm.cloud.appconfiguration.android.sdk.core.*
+import com.ibm.cloud.appconfiguration.android.sdk.core.Logger
+import com.ibm.cloud.appconfiguration.android.sdk.core.ServiceImpl
+import com.ibm.cloud.sdk.core.http.Response
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 
+/**
+ * Internal class to handle the configuration.
+ */
 internal class ConfigurationHandler {
 
     private lateinit var collectionId: String
@@ -45,9 +47,14 @@ internal class ConfigurationHandler {
     private var segmentMap: HashMap<String, Segment> = HashMap()
     private var metering: Metering? = null
     private var retryCount = 3
+    private var fileManager: FileManagerInterface = FileManager
 
     companion object Factory {
         private var instance: ConfigurationHandler? = null
+
+        /**
+         * @return instance of [ConfigurationHandler]
+         */
         fun getInstance(): ConfigurationHandler {
             if (instance == null)
                 instance =
@@ -56,6 +63,13 @@ internal class ConfigurationHandler {
         }
     }
 
+    /**
+     * Initialize the configurations.
+     *
+     * @param context application context
+     * @param collectionId collection id
+     * @param environmentId environment id
+     */
     fun init(context: Context, collectionId: String, environmentId: String) {
         appContext = context
         this.collectionId = collectionId
@@ -78,10 +92,24 @@ internal class ConfigurationHandler {
         }
     }
 
-    fun getFeatures(): HashMap<String, Feature>? {
+    /**
+     * Returns all features.
+     *
+     * @return hashmap of all features and their corresponding [Feature] objects
+     */
+    fun getFeatures(): HashMap<String, Feature> {
+        if (featureMap.size == 0) {
+            loadConfigurations()
+        }
         return featureMap
     }
 
+    /**
+     * Returns the [Feature] object with the details of the feature specified by the `featureId`.
+     *
+     * @param featureId the Feature Id
+     * @return
+     */
     fun getFeature(featureId: String?): Feature? {
         return if (featureMap.containsKey(featureId)) {
             featureMap[featureId]
@@ -96,10 +124,21 @@ internal class ConfigurationHandler {
         }
     }
 
-    fun getProperties(): HashMap<String, Property>? {
+    /**
+     * Returns all properties.
+     *
+     * @return hashmap of all properties and their corresponding [Property] objects
+     */
+    fun getProperties(): HashMap<String, Property> {
         return propertyMap
     }
 
+    /**
+     * Returns the [Property] object with the details of the property specified by the `propertyId`.
+     *
+     * @param propertyId the Property Id
+     * @return
+     */
     fun getProperty(propertyId: String?): Property? {
         return if (propertyMap.containsKey(propertyId)) {
             propertyMap[propertyId]
@@ -125,7 +164,7 @@ internal class ConfigurationHandler {
     }
 
     private fun loadConfigurations() {
-        val allConfigs = FileManager.getFileData(appContext) ?: return
+        val allConfigs = fileManager.getFileData(appContext) ?: return
 
         if (allConfigs.has("features")) {
             try {
@@ -170,6 +209,14 @@ internal class ConfigurationHandler {
         }
     }
 
+    /**
+     * Records each of feature and property evaluations done by sending it to [Metering].
+     *
+     * @param featureId feature id
+     * @param propertyId property id
+     * @param entityId entity id
+     * @param segmentId segment id
+     */
     private fun recordEvaluation(
         featureId: String?,
         propertyId: String?,
@@ -187,7 +234,19 @@ internal class ConfigurationHandler {
         )
     }
 
-    fun propertyEvaluation(property: Property, entityId: String, entityAttributes: JSONObject): Any? {
+    /**
+     * Property evaluation.
+     *
+     * @param property object of [Property] class
+     * @param entityId entity id
+     * @param entityAttributes entity attributes JSON object
+     * @return property evaluated value
+     */
+    fun propertyEvaluation(
+        property: Property,
+        entityId: String,
+        entityAttributes: JSONObject
+    ): Any? {
 
         var resultDict = JSONObject()
         resultDict.put("evaluated_segment_id", ConfigConstants.DEFAULT_SEGMENT_ID)
@@ -218,6 +277,14 @@ internal class ConfigurationHandler {
         }
     }
 
+    /**
+     * Feature evaluation.
+     *
+     * @param feature object of [Feature] class
+     * @param entityId entity id
+     * @param entityAttributes entity attributes JSON object
+     * @return feature evaluated value
+     */
     fun featureEvaluation(feature: Feature, entityId: String, entityAttributes: JSONObject): Any? {
 
         var resultDict = JSONObject()
@@ -334,8 +401,8 @@ internal class ConfigurationHandler {
         return rulesMap
     }
 
-    fun writeToFile(jsonData: JSONObject) {
-        FileManager.storeFiles(appContext, jsonData.toString())
+    private fun writeToFile(jsonData: JSONObject) {
+        fileManager.storeFiles(appContext, jsonData.toString())
         loadConfigurations()
         if (configurationUpdateListener != null) {
             configurationUpdateListener?.onConfigurationUpdate()
@@ -344,31 +411,26 @@ internal class ConfigurationHandler {
 
     private fun fetchFromAPI() {
         if (isInitialized) {
-
             val configURL = urlBuilder.getConfigUrl()
-            val apiManager: APIManager =
-                APIManager.newInstance(appContext, configURL, BaseRequest.GET)
-            apiManager.setResponseListener(object : ResponseListener {
-                override fun onSuccess(response: Response) {
+            val response: Response<String>? = ServiceImpl.getInstance().getConfig(configURL)
+            if (response != null) {
+                if (response.statusCode >= ConfigConstants.REQUEST_SUCCESS_200
+                    && response.statusCode <= ConfigConstants.REQUEST_SUCCESS_299
+                ) {
+                    Logger.debug("Successfully fetched the configurations with response statusCode=${response.statusCode}")
                     var responseText: JSONObject? = null
                     try {
-                        responseText = JSONObject(response.getResponseText() ?: "")
+                        responseText = JSONObject(response.result)
                     } catch (e: JSONException) {
                         Logger.error("Error decoding the server response. ${e.message}")
                     }
                     responseText?.let { writeToFile(it) }
-                }
-
-                override fun onFailure(
-                    response: Response?,
-                    throwable: Throwable?,
-                    extendedInfo: JSONObject?
-                ) {
+                } else {
                     Logger.error(ConfigMessages.CONFIG_API_ERROR)
                 }
-
-            })
-            apiManager.execute()
+            } else {
+                Logger.error(ConfigMessages.CONFIG_API_ERROR)
+            }
         } else {
             Logger.error(ConfigMessages.CONFIG_HANDLER_INIT_ERROR)
         }

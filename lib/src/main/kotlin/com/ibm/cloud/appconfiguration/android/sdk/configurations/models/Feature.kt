@@ -52,33 +52,69 @@ class Feature(featureList: JSONObject) {
         }
     }
 
-    /** Get the Feature name */
+    /**
+     * Get the Feature name.
+     *
+     * @return the feature name
+     */
     fun getFeatureName(): String = name
 
-    /** Get the Feature ID */
+    /**
+     * Get the Feature Id.
+     *
+     * @return the feature id
+     */
     fun getFeatureId(): String = featureId
 
-    /** Get the Feature dataType */
+    /**
+     * Get the feature data type.
+     *
+     * @return string named BOOLEAN/STRING/NUMERIC
+     */
     fun getFeatureDataType(): ConfigurationType = type
 
-    /** Get current status of the Feature */
+    /**
+     * Return the enabled status of the feature.
+     *
+     * @return `true` or `false`
+     */
     fun isEnabled(): Boolean = enabled
 
-    /** Get segment rules from the Feature */
+    /**
+     * Get the rules of the Segment targeted.
+     *
+     * @return segment rules
+     */
     fun getSegmentRules(): JSONArray = segmentRules
 
-    fun getFeatureEnabledValue(): Any? {
+    /**
+     * Get the enabled value of the feature.
+     *
+     * @return enabled value
+     */
+    fun getFeatureEnabledValue(): Any {
         return enabledValue
     }
 
-    fun getFeatureDisabledValue(): Any? {
+    /**
+     * Get the disabled value of the feature.
+     *
+     * @return disabled value
+     */
+    fun getFeatureDisabledValue(): Any {
         return disabledValue
     }
 
-    /** Get current value of the Feature. Pass the Data type. */
+    /**
+     * Get the evaluated value of the feature. Pass the Data type
+     *
+     * @param entityId id of the entity
+     * @param entityAttributes entity attributes JSON object
+     * @return evaluated value
+     */
     fun getCurrentValue(entityId: String, entityAttributes: JSONObject = JSONObject()): Any? {
 
-        if(entityId == "") {
+        if (entityId == "") {
             Logger.error(ConfigMessages.ENTITY_UPDATE_ERROR)
             return null
         }

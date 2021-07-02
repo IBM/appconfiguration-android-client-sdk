@@ -41,20 +41,23 @@ class SegmentRules(segmentRules: JSONObject) {
     }
 
     /**
-     * Get the SegmentRules order
-     * @return Integer
+     * Get the SegmentRules order.
+     *
+     * @return the order of the rule in the [SegmentRules] object
      */
     fun getOrder(): Int = order
 
     /**
-     * Get the SegmentRules rules array
-     * @return JSONArray
+     * Get the SegmentRules rules array.
+     *
+     * @return the rules array of the [SegmentRules] object
      */
     fun getRules(): JSONArray = rules
 
     /**
-     * Get the SegmentRules value
-     * @return Any
+     * Get the SegmentRules value.
+     *
+     * @return the value of the rule in [SegmentRules] object
      */
     fun getValue(): Any = value
 

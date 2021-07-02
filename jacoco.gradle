@@ -1,0 +1,48 @@
+apply plugin: 'jacoco'
+
+ext {
+    coverageSourceDirs = 'src/test/kotlin'
+}
+
+jacoco {
+    toolVersion = "0.8.3"
+    reportsDir = file("../lib/build/reports/rep") // file for reports (xml, html)
+}
+
+task jacocoTestReport(type: JacocoReport) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for Debug build"
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def excludes = ['**/R.class',
+                    '**/R$*.class',
+                    '**/*$ViewBinder*.*',
+                    '**/*$InjectAdapter*.*',
+                    '**/*Injector*.*',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*',
+                    '**/*Test*.*',
+                    '**/CiMattersApplication*.*',
+                    'android/**/*.*',
+                    '**/di/']
+
+    def kotlinDebugTreeMyLib = fileTree(
+            dir: "../lib/build/tmp/kotlin-classes/debug/com/ibm/cloud/appconfiguration/android/sdk",
+            excludes: excludes)
+    def mainSrcMyLib = "../lib/src/main/kotlin"
+
+
+    classDirectories.from = files(
+            [kotlinDebugTreeMyLib]
+    )
+    sourceDirectories.from = files(
+            [mainSrcMyLib]
+    )
+    executionData.from = files(
+            "../lib/build/jacoco/testDebugUnitTest.exec"
+    )
+}

@@ -18,6 +18,6 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations
 
 // Listener for the client app
 interface ConfigurationUpdateListener {
-   // This method will be called when there is a change in the features
+    // This method will be called when latest configurations are fetched from the server
     fun onConfigurationUpdate()
 }

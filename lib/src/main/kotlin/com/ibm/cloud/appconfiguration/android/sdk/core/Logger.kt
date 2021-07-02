@@ -19,10 +19,14 @@ package com.ibm.cloud.appconfiguration.android.sdk.core
 import android.util.Log
 import java.util.*
 
+/**
+ * Class for handling the sdk logging.
+ */
 open class Logger {
 
     companion object {
         protected var is_debug = false
+        private const val prefix = "AppConfiguration"
 
         enum class LEVEL(val value: String) {
             SUCCESS("SUCCESS"),
@@ -32,37 +36,72 @@ open class Logger {
             DEBUG("DEBUG")
         }
 
+        /**
+         * Enable or disable the logging.
+         *
+         * @param value boolean value for the debug logger
+         */
         fun setDebug(value: Boolean) {
             this.is_debug = value
         }
 
+        /**
+         * Method to check current status of debug logger.
+         *
+         * @return a boolean value
+         */
         fun isDebug(): Boolean {
             return this.is_debug
         }
 
+        /**
+         * Method to pass the info logger message.
+         *
+         * @param message message in string format
+         */
         fun info(message: String) {
-            Log.i(LEVEL.INFO.value, " ${getTime()} : $message")
+            Log.i(LEVEL.INFO.value, "$prefix ${getTime()}: $message")
         }
 
+        /**
+         * Method to pass the info error message.
+         *
+         * @param message message in string format
+         */
         fun error(message: String) {
-            Log.e(LEVEL.ERROR.value, " ${getTime()} : $message")
+            Log.e(LEVEL.ERROR.value, "$prefix ${getTime()}: $message")
         }
 
+        /**
+         * Method to pass the warning logger message.
+         *
+         * @param message message in string format
+         */
         fun warning(message: String) {
             if (this.is_debug) {
-                Log.w(LEVEL.WARN.value, " ${getTime()} : $message")
+                Log.w(LEVEL.WARN.value, "$prefix ${getTime()}: $message")
             }
         }
 
+        /**
+         * Method to pass the success logger message.
+         *
+         * @param message message in string format
+         */
         fun success(message: String) {
             if (this.is_debug) {
-                Log.i(LEVEL.SUCCESS.value, " ${getTime()} : $message")
+                Log.i(LEVEL.SUCCESS.value, "$prefix ${getTime()}: $message")
             }
         }
 
+        /**
+         * Method to pass the debug logger message.
+         *
+         * @param message message in string format
+         */
         fun debug(message: String) {
             if (this.is_debug) {
-                Log.d(LEVEL.DEBUG.value, " ${getTime()} : $message")
+                Log.d(LEVEL.DEBUG.value, "$prefix ${getTime()}: $message")
             }
         }
 

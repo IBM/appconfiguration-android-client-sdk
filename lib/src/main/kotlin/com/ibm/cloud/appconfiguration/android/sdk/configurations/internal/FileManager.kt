@@ -25,22 +25,32 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 
-internal object FileManager {
+
+interface FileManagerInterface {
+    fun storeFiles(context: Context, json: String): Boolean
+    fun getFileData(context: Context): JSONObject?
+}
+
+internal object FileManager : FileManagerInterface {
 
     private val fileLock = Any()
-    const val fileName = "appconfiguration.json"
+    private const val fileName = "appconfiguration.json"
 
-    fun storeFiles(context: Context, json: String): Boolean {
+    /**
+     * Write the given data to device storage.
+     *
+     * @param context application context
+     * @param json the data to write
+     * @return boolean value that indicates file write operations is successful or not
+     */
+    override fun storeFiles(context: Context, json: String): Boolean {
         synchronized(fileLock) {
             return try {
                 val fileStorage = context.openFileOutput(
                     fileName,
                     Context.MODE_PRIVATE
-                )
-                if (Validators.validateString(
-                        json
-                    )
-                ) {
+                ) ?: return false
+                if (Validators.validateString(json)) {
                     fileStorage.write(json.toByteArray())
                 }
                 fileStorage.close()
@@ -55,11 +65,17 @@ internal object FileManager {
         }
     }
 
-    fun getFileData(context: Context): JSONObject? {
+    /**
+     * Read the data from the device storage.
+     *
+     * @param context application context
+     * @return the file data
+     */
+    override fun getFileData(context: Context): JSONObject? {
         synchronized(fileLock) {
             return try {
                 val fileStorage =
-                    context.openFileInput(fileName)
+                    context.openFileInput(fileName) ?: return null
                 val isr = InputStreamReader(fileStorage)
                 val bufferedReader = BufferedReader(isr)
                 val sb = StringBuilder()
