@@ -39,14 +39,14 @@ class URLBuilderTest {
     fun urlBuilderLocalHost() {
 
         val builder = URLBuilder.getInstance()
-        AppConfiguration.overrideServerHost = "http://localhost:8080"
+        AppConfiguration.overrideServerHost = "https://localhost:8080"
         builder.init("flightprojects", "dev")
 
         assertNotNull(builder.getConfigUrl())
         assertNotNull(builder.getMeteringUrl("meteringInstance"))
 
-        assertTrue(builder.getConfigUrl().startsWith("http://localhost:8080"))
-        assertTrue(builder.getMeteringUrl("meteringInstance").startsWith("http://localhost:8080"))
+        assertTrue(builder.getConfigUrl().startsWith("https://localhost:8080"))
+        assertTrue(builder.getMeteringUrl("meteringInstance").startsWith("https://localhost:8080"))
 
     }
 }
