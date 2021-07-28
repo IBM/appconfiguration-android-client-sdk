@@ -1,14 +1,8 @@
 package com.ibm.cloud.appconfiguration.android.sdk.core
 
-import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.URLBuilder
-import com.ibm.cloud.sdk.core.http.RequestBuilder
-import com.ibm.cloud.sdk.core.http.Response
-import com.ibm.cloud.sdk.core.security.Authenticator
-import com.ibm.cloud.sdk.core.security.NoAuthAuthenticator
 import com.ibm.cloud.sdk.core.service.BaseService
-import com.ibm.cloud.sdk.core.util.ResponseConverterUtils
-import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -36,33 +30,22 @@ class ServiceImplTest : BaseService() {
         server.shutdown()
     }
 
-    @Throws(Throwable::class)
-    fun constructClientService() {
-        val serviceName = "testService"
-        val authenticator: Authenticator = NoAuthAuthenticator()
-        ServiceImpl(serviceName, authenticator)
-    }
-
     /** Negative Test - construct the service with a null authenticator.  */
     @Test(expected = IllegalArgumentException::class)
-    @Throws(Throwable::class)
     fun testWithNullAuthenticator() {
         val serviceName = "testService"
         ServiceImpl(serviceName, null)
     }
 
-    /**
-     * TODO
-     */
     @Test
-    @Throws(Throwable::class)
     fun testGetConfig() {
+        val test = ServiceImpl.getInstance()
+        assertNull(test.getConfig("https://testConfig"))
     }
 
-    /**
-     * TODO
-     */
     @Test
     fun testPostMetering() {
+        val test = ServiceImpl.getInstance()
+        assertNull(test.postMetering("https://testMetering", JSONObject()))
     }
 }
