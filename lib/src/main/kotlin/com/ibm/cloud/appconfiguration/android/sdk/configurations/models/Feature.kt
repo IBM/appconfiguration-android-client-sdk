@@ -34,6 +34,7 @@ class Feature(featureList: JSONObject) {
     private var segmentRules = JSONArray()
     private var featureData = JSONObject()
     private var type: ConfigurationType = ConfigurationType.NUMERIC
+    private var format: String? = ""
     lateinit var disabledValue: Any
     lateinit var enabledValue: Any
 
@@ -45,6 +46,7 @@ class Feature(featureList: JSONObject) {
             segmentRules = featureList.getJSONArray("segment_rules")
             featureData = featureList
             type = ConfigurationType.valueOf(featureList.getString("type"))
+            format = featureList.optString("format")
             enabledValue = featureList["enabled_value"]
             disabledValue = featureList["disabled_value"]
         } catch (e: Exception) {
@@ -72,6 +74,21 @@ class Feature(featureList: JSONObject) {
      * @return string named BOOLEAN/STRING/NUMERIC
      */
     fun getFeatureDataType(): ConfigurationType = type
+
+    /**
+     * Get the feature data format.
+     * Applicable only for [ConfigurationType.STRING]
+     *
+     * @return string named TEXT/JSON/YAML
+     */
+    fun getFeatureDataFormat(): String? {
+        // Format will be empty string ("") for Boolean & Numeric feature flags
+        // If the Format is empty for a String type, we default it to TEXT
+        if (format == "" && type == ConfigurationType.STRING) {
+            format = "TEXT"
+        }
+        return format
+    }
 
     /**
      * Return the enabled status of the feature.

@@ -25,8 +25,9 @@ class FeatureTest {
 
     var sut: Feature? = null
 
-    fun setUpStringFeature(
+    fun setUpFeature(
         type: ConfigurationType,
+        format: String?,
         disabled: Any?,
         enabled: Any?,
         isEnabled: Boolean?
@@ -36,6 +37,7 @@ class FeatureTest {
             feature.put("name", "defaultFeature")
             feature.put("feature_id", "defaultfeature")
             feature.put("type", type.toString())
+            feature.put("format", format)
             feature.put("disabled_value", disabled)
             feature.put("enabled_value", enabled)
             feature.put("enabled", isEnabled)
@@ -49,8 +51,9 @@ class FeatureTest {
 
     @Test
     fun testStringFeature() {
-        setUpStringFeature(ConfigurationType.STRING, "unknown user", "Org user", true)
+        setUpFeature(ConfigurationType.STRING, "TEXT", "unknown user", "Org user", true)
         assertEquals(sut!!.getFeatureDataType(), ConfigurationType.STRING)
+        assertEquals(sut!!.getFeatureDataFormat(), "TEXT")
         assertEquals(sut!!.getFeatureName(), "defaultFeature")
         assertEquals(sut!!.getFeatureId(), "defaultfeature")
         assertEquals(sut!!.isEnabled(), true)
@@ -60,9 +63,50 @@ class FeatureTest {
     }
 
     @Test
+    fun testJsonFeature() {
+        val enabled = JSONObject()
+        enabled.put("name", "tester")
+        enabled.put("description", "testing")
+
+        val disabled = JSONObject()
+        disabled.put("name", "developer")
+        disabled.put("description", "coding")
+
+        setUpFeature(ConfigurationType.STRING, "JSON", disabled, enabled, true)
+        assertEquals(sut!!.getFeatureDataType(), ConfigurationType.STRING)
+        assertEquals(sut!!.getFeatureDataFormat(), "JSON")
+        assertEquals(sut!!.getFeatureName(), "defaultFeature")
+        assertEquals(sut!!.getFeatureId(), "defaultfeature")
+        assertEquals(sut!!.isEnabled(), true)
+        assertEquals(
+            (sut!!.getCurrentValue("pqrt", JSONObject()) as JSONObject).get("name"),
+            "tester"
+        )
+        assertEquals((sut!!.getFeatureDisabledValue() as JSONObject).get("name"), "developer")
+        assertEquals((sut!!.getFeatureEnabledValue() as JSONObject).get("name"), "tester")
+    }
+
+    @Test
+    fun testYamlFeature() {
+        val enabled =
+            "name: tester\ndescription: testing\n---\nname: developer\ndescription: coding"
+        val disabled = "name: devops\ndescription: deploying\n"
+        setUpFeature(ConfigurationType.STRING, "YAML", disabled, enabled, true)
+        assertEquals(sut!!.getFeatureDataType(), ConfigurationType.STRING)
+        assertEquals(sut!!.getFeatureDataFormat(), "YAML")
+        assertEquals(sut!!.getFeatureName(), "defaultFeature")
+        assertEquals(sut!!.getFeatureId(), "defaultfeature")
+        assertEquals(sut!!.isEnabled(), true)
+        assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as String?, enabled)
+        assertEquals(sut!!.disabledValue, disabled)
+        assertEquals(sut!!.enabledValue, enabled)
+    }
+
+    @Test
     fun testBooleanFeature() {
-        setUpStringFeature(ConfigurationType.BOOLEAN, false, true, true)
+        setUpFeature(ConfigurationType.BOOLEAN, "", false, true, true)
         assertEquals(sut!!.getFeatureDataType(), ConfigurationType.BOOLEAN)
+        assertEquals(sut!!.getFeatureDataFormat(), "")
         assertEquals(sut!!.getFeatureName(), "defaultFeature")
         assertEquals(sut!!.getFeatureId(), "defaultfeature")
         assertEquals(sut!!.isEnabled(), true)
@@ -73,8 +117,9 @@ class FeatureTest {
 
     @Test
     fun testNumericFeature() {
-        setUpStringFeature(ConfigurationType.NUMERIC, 20, 50, false)
+        setUpFeature(ConfigurationType.NUMERIC, "", 20, 50, false)
         assertEquals(sut!!.getFeatureDataType(), ConfigurationType.NUMERIC)
+        assertEquals(sut!!.getFeatureDataFormat(), "")
         assertEquals(sut!!.getFeatureName(), "defaultFeature")
         assertEquals(sut!!.getFeatureId(), "defaultfeature")
         assertEquals(sut!!.isEnabled(), false)
