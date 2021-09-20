@@ -32,6 +32,7 @@ class Property(propertyList: JSONObject) {
     private var propertyId = ""
     private var segmentRules = JSONArray()
     private var type: ConfigurationType = ConfigurationType.NUMERIC
+    private var format: String? = ""
     private var value: Any = ""
 
     init {
@@ -40,6 +41,7 @@ class Property(propertyList: JSONObject) {
             propertyId = propertyList.getString("property_id")
             segmentRules = propertyList.getJSONArray("segment_rules")
             type = ConfigurationType.valueOf(propertyList.getString("type"))
+            format = propertyList.optString("format")
             value = propertyList["value"]
         } catch (e: Exception) {
             Logger.error("Invalid action in Property class. ${e.message}")
@@ -66,6 +68,21 @@ class Property(propertyList: JSONObject) {
      * @return string named BOOLEAN/STRING/NUMERIC
      */
     fun getPropertyDataType(): ConfigurationType = type
+
+    /**
+     * Get the Property data format.
+     * Applicable only for [ConfigurationType.STRING]
+     *
+     * @return string named TEXT/JSON/YAML
+     */
+    fun getPropertyDataFormat(): String? {
+        // Format will be empty string ("") for Boolean & Numeric properties
+        // If the Format is empty for a String type, we default it to TEXT
+        if (format == "" && type == ConfigurationType.STRING) {
+            format = "TEXT"
+        }
+        return format
+    }
 
     /**
      * Get the rules of the Segment targeted.

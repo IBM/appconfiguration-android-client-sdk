@@ -8,7 +8,7 @@ apply from: '../jacoco.gradle'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.1"
+    buildToolsVersion "30.0.2"
 
     android.sourceSets {
         debug.java.srcDirs += "src/debug/kotlin"
@@ -21,8 +21,8 @@ android {
         minSdkVersion 22
         targetSdkVersion 30
         versionCode 1
-        versionName "0.1.2"
-        buildConfigField 'String', 'VERSION_NAME', "\"0.1.2\""
+        versionName "0.2.0"
+        buildConfigField 'String', 'VERSION_NAME', "\"0.2.0\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
