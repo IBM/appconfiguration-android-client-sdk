@@ -21,6 +21,7 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
  */
 object ConfigConstants {
     const val DEFAULT_SEGMENT_ID = "\$\$null\$\$"
+    const val DEFAULT_ENTITY_ID = "\$\$null\$\$"
     const val REQUEST_SUCCESS_200 = 200
     const val REQUEST_SUCCESS_299 = 299
     const val DEFAULT_HTTP_TYPE = "https://"

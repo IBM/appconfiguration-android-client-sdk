@@ -225,7 +225,10 @@ internal class Metering {
 
                                 val usages = JSONObject()
                                 usages.put(key, meterEntry.key)
-                                usages.put("entity_id", entityEntry.key)
+                                usages.put(
+                                    "entity_id",
+                                    if (entityEntry.key === "$\$null$$") JSONObject.NULL else entityEntry.key
+                                )
                                 usages.put(
                                     "segment_id",
                                     if (segmentEntry.key === "$\$null$$") JSONObject.NULL else segmentEntry.key
