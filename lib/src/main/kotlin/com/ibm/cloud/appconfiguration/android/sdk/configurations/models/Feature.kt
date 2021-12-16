@@ -17,6 +17,7 @@
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.models
 
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.ConfigurationHandler
+import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.ConfigConstants
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.ConfigMessages
 import com.ibm.cloud.appconfiguration.android.sdk.core.Logger
 import org.json.JSONArray
@@ -35,8 +36,8 @@ class Feature(featureList: JSONObject) {
     private var featureData = JSONObject()
     private var type: ConfigurationType = ConfigurationType.NUMERIC
     private var format: String? = ""
-    lateinit var disabledValue: Any
-    lateinit var enabledValue: Any
+    private lateinit var disabledValue: Any
+    private lateinit var enabledValue: Any
 
     init {
         try {
@@ -95,7 +96,17 @@ class Feature(featureList: JSONObject) {
      *
      * @return `true` or `false`
      */
-    fun isEnabled(): Boolean = enabled
+    fun isEnabled(): Boolean {
+
+        val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
+        configurationHandler.recordEvaluation(
+            featureId,
+            null,
+            ConfigConstants.DEFAULT_ENTITY_ID,
+            ConfigConstants.DEFAULT_SEGMENT_ID
+        )
+        return enabled
+    }
 
     /**
      * Get the rules of the Segment targeted.
@@ -137,6 +148,6 @@ class Feature(featureList: JSONObject) {
         }
 
         val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
-        return configurationHandler.featureEvaluation(this, entityId, entityAttributes)
+        return configurationHandler.featureEvaluation(this, enabled, entityId, entityAttributes)
     }
 }

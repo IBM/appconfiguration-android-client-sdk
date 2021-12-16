@@ -58,8 +58,8 @@ class FeatureTest {
         assertEquals(sut!!.getFeatureId(), "defaultfeature")
         assertEquals(sut!!.isEnabled(), true)
         assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as String?, "Org user")
-        assertEquals(sut!!.disabledValue, "unknown user")
-        assertEquals(sut!!.enabledValue, "Org user")
+        assertEquals(sut!!.getFeatureDisabledValue(), "unknown user")
+        assertEquals(sut!!.getFeatureEnabledValue(), "Org user")
     }
 
     @Test
@@ -98,8 +98,8 @@ class FeatureTest {
         assertEquals(sut!!.getFeatureId(), "defaultfeature")
         assertEquals(sut!!.isEnabled(), true)
         assertEquals(sut!!.getCurrentValue("pqrt", JSONObject()) as String?, enabled)
-        assertEquals(sut!!.disabledValue, disabled)
-        assertEquals(sut!!.enabledValue, enabled)
+        assertEquals(sut!!.getFeatureDisabledValue(), disabled)
+        assertEquals(sut!!.getFeatureEnabledValue(), enabled)
     }
 
     @Test

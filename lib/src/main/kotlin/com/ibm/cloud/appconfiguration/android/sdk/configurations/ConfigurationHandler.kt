@@ -217,7 +217,7 @@ internal class ConfigurationHandler {
      * @param entityId entity id
      * @param segmentId segment id
      */
-    private fun recordEvaluation(
+    fun recordEvaluation(
         featureId: String?,
         propertyId: String?,
         entityId: String,
@@ -281,18 +281,24 @@ internal class ConfigurationHandler {
      * Feature evaluation.
      *
      * @param feature object of [Feature] class
+     * @param isEnabled enabled value of [Feature] class object (true/false)
      * @param entityId entity id
      * @param entityAttributes entity attributes JSON object
      * @return feature evaluated value
      */
-    fun featureEvaluation(feature: Feature, entityId: String, entityAttributes: JSONObject): Any? {
+    fun featureEvaluation(
+        feature: Feature,
+        isEnabled: Boolean,
+        entityId: String,
+        entityAttributes: JSONObject
+    ): Any? {
 
         var resultDict = JSONObject()
         resultDict.put("evaluated_segment_id", ConfigConstants.DEFAULT_SEGMENT_ID)
         resultDict.put("value", Any())
 
         try {
-            if (feature.isEnabled()) {
+            if (isEnabled) {
 
                 if (entityAttributes.length() == 0) {
                     return feature.getFeatureEnabledValue()
