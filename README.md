@@ -11,13 +11,13 @@ Instrument your applications with App Configuration Android SDK, and use the App
 ## Contents
 - [Prerequisites](#prerequisites)
 - [Kotlin](#kotlin)
-    - [Installation](#installation-kotlin)
-    - [Initialize SDK](#initialize-kotlin-sdk)
-    - [Import Kotlin AppConfiguration SDK](#import-kotlin-appconfiguration-sdk)
+    - [Installation](#installation)
+    - [Import SDK](#import-sdk)
+    - [Initialize AppConfiguration SDK](#initialize-appconfiguration-sdk)
 - [Java](#java)
-    - [Installation](#installation-java)
-    - [Initialize SDK](#initialize-java-sdk)
-    - [Import Java AppConfiguration SDK](#import-appconfiguration-java-sdk)
+    - [Installation](#installation-1)
+    - [Import SDK](#import-sdk-1)
+    - [Initialize AppConfiguration SDK](#initialize-appconfiguration-sdk-1)
 - [License](#license)
 
 
@@ -32,14 +32,14 @@ Instrument your applications with App Configuration Android SDK, and use the App
 
 # Kotlin
 
-## Installation Kotlin
+## Installation
 
 Choose to integrate the AppConfiguration Android client SDK package using either of the following options:
 
 - Download and import the package to your Android Studio project
 - Get the package through Gradle
 
-## Initialize Kotlin SDK
+## Import SDK
 
 - Configure the Module level `build.gradle` and Project level `build.gradle` files.
 
@@ -67,24 +67,28 @@ Choose to integrate the AppConfiguration Android client SDK package using either
     	 <uses-permission android:name="android.permission.INTERNET"/>
     ```
 
-## Import Kotlin AppConfiguration SDK
+## Initialize AppConfiguration SDK
 
-  ### initialization
-  ```kt
-    val appConfiguration = AppConfiguration.getInstance()
 
-    appConfiguration.init( application,
-                          region,
-                          "apikey",
-                          "guid")
+```kt
+import com.ibm.cloud.appconfiguration.android.sdk.AppConfiguration
 
-    //To start the configuration fetching operation, set the collectionId and environmentId in the following way.
-    val collectionId = "airlines-webapp"
-    val environmentId = "dev"
-    appConfiguration.setContext(collectionId, environmentId)
+val collectionId = "airlines-webapp"
+val environmentId = "dev"
 
- 
+val appConfigClient = AppConfiguration.getInstance()
+appConfigClient.init(application,
+                      "region",
+                      "apikey",
+                      "guid")
+appConfigClient.setContext(collectionId, environmentId)
 ```
+
+:red_circle: **Important** :red_circle:
+
+The **`init()`** and **`setContext()`** are the initialisation methods and should be invoked **only
+once** using appConfigClient. The appConfigClient, once initialised, can be obtained across modules
+using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-the-appconfigclient-across-other-modules).
 
 - region : Region name where the service instance is created. Use
     - `AppConfiguration.REGION_US_SOUTH` for Dallas
@@ -95,35 +99,21 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
 - environmentId : Id of the environment created in App Configuration service instance under the **Environments** section.
 
-## Set listener for the feature and property data changes
-
-To listen to the configuration changes in your App Configuration service instance, implement the `registerConfigurationUpdateListener` event listener as mentioned below.
-
-```kt
-
-appConfiguration.registerConfigurationUpdateListener(object : ConfigurationUpdateListener {
-    override fun onConfigurationUpdate() {
-        println("Received updates on configurations")
-    }
-})
-
-```
-
 ## Get single feature
 
 ```kt
-val feature: Feature? = appConfiguration.getFeature("online-check-in")
+val feature: Feature? = appConfigClient.getFeature("online-check-in")
 ```
 
 ## Get all features
 
 ```kt
-val features: HashMap<String, Feature>? = appConfiguration.getFeatures()
+val features: HashMap<String, Feature>? = appConfigClient.getFeatures()
 ```
 
 ## Evaluate a feature
 
-Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
+Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
 
 ### Usage
 
@@ -140,35 +130,38 @@ Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evalua
         e.printStackTrace()
     }
    
-    val appConfiguration = AppConfiguration.getInstance()
-    val feature: Feature? = appConfiguration.getFeature("online-check-in")
-    
-    val value = feature.getCurrentValue(entityId, entityAttributes)
-
+    val appConfigClient = AppConfiguration.getInstance()
+    val feature: Feature? = appConfigClient.getFeature("online-check-in")
+    if (feature != null) {
+        val value = feature.getCurrentValue(entityId, entityAttributes)
+    }
     ```
 
   - If the feature flag is not targeted to any segments and the feature flag is turned ON this method returns the feature enabled value. And when the feature flag is turned OFF this method returns the feature disabled value.
 
-    ```py
+     ```kt
     val entityId = "john_doe"
-    val value = feature.getCurrentValue(entityId)
+    val feature: Feature? = appConfigClient.getFeature("online-check-in")
+    if (feature != null) {
+        val value = feature.getCurrentValue(entityId)
+    }
     ```
 
 ## Get single Property
 
 ```kt
-val property: Property? = appConfiguration.getProperty("check-in-charges")
+val property: Property? = appConfigClient.getProperty("check-in-charges")
 ```
 
 ## Get all Properties
 
 ```kt
-val properties: HashMap<String, Property>? = appConfiguration.getProperties()
+val properties: HashMap<String, Property>? = appConfigClient.getProperties()
 ```
 
 ## Evaluate a property
 
-Use the `property.getCurrentValue(entity_id, entity_attributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
+Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
 
 ### Usage
 
@@ -186,18 +179,38 @@ Use the `property.getCurrentValue(entity_id, entity_attributes)` method to evalu
         }
 
 
-        val appConfiguration = AppConfiguration.getInstance()
-        val property: Property? = appConfiguration.getProperty("check-in-charges")
-        val value = property.getCurrentValue(entityId, entityAttributes)
+        val appConfigClient = AppConfiguration.getInstance()
+        val property: Property? = appConfigClient.getProperty("check-in-charges")
+        if (property != null) {
+            val value = property.getCurrentValue(entityId, entityAttributes)
+        }
     ```
 
 - If the property is not targeted to any segments this method returns the property value.
 
     ```kt
     val entityId = "john_doe"
-    val property: Property? = appConfiguration.getProperty("check-in-charges")
-    val value = property.getCurrentValue(entityId)
+    val property: Property? = appConfigClient.getProperty("check-in-charges")
+    if (property != null) {
+        val value = property.getCurrentValue(entityId)
+    }
     ```
+
+## Fetching the appConfigClient across other modules
+
+Once the SDK is initialized, the appConfigClient can be obtained across other modules as shown
+below:
+
+```kt
+// **other modules**
+
+import com.ibm.cloud.appconfiguration.android.sdk.AppConfiguration
+val appConfigClient = AppConfiguration.getInstance()
+
+val feature: Feature? = appConfigClient.getFeature("online-check-in")
+val enabled = feature.isEnabled()
+val featureValue = feature.getCurrentValue(entityId, entityAttributes)
+```
 
 ## Supported Data types
 
@@ -219,9 +232,9 @@ format accordingly as shown in the below table.
 <details><summary>Feature flag</summary>
 
   ```kt
-  val feature: Feature? = appConfiguration.getFeature("json-feature")
-  feature.getFeatureDataType(); // STRING
-  feature.getFeatureDataFormat(); // JSON
+  val feature: Feature? = appConfigClient.getFeature("json-feature")
+  feature.getFeatureDataType() // STRING
+  feature.getFeatureDataFormat() // JSON
 
   // Example below (traversing the returned JSONObject)
   if (feature != null) {
@@ -229,19 +242,19 @@ format accordingly as shown in the below table.
     result.get("key") // returns the value of the key
   }
   
-  val feature: Feature? = appConfiguration.getFeature("yaml-feature")
-  feature.getFeatureDataType(); // STRING
-  feature.getFeatureDataFormat(); // YAML
-  feature.getCurrentValue(entityId, entityAttributes); // returns the stringified yaml (check above table)
+  val feature: Feature? = appConfigClient.getFeature("yaml-feature")
+  feature.getFeatureDataType() // STRING
+  feature.getFeatureDataFormat() // YAML
+  feature.getCurrentValue(entityId, entityAttributes) // returns the stringified yaml (check above table)
   ```
 
 </details>
 <details><summary>Property</summary>
 
   ```javascript
-  val property: Property? = appConfiguration.getProperty("json-property")
-  property.getPropertyDataType(); // STRING
-  property.getPropertyDataFormat(); // JSON
+  val property: Property? = appConfigClient.getProperty("json-property")
+  property.getPropertyDataType() // STRING
+  property.getPropertyDataFormat() // JSON
 
   // Example below (traversing the returned JSONObject)
   if (property != null) {
@@ -249,25 +262,48 @@ format accordingly as shown in the below table.
     result.get("key") // returns the value of the key
   }
 
-  val property: Property? = appConfiguration.getProperty("yaml-property")
-  property.getPropertyDataType(); // STRING
-  property.getPropertyDataFormat(); // YAML
-  property.getCurrentValue(entityId, entityAttributes); // returns the stringified yaml (check above table)
+  val property: Property? = appConfigClient.getProperty("yaml-property")
+  property.getPropertyDataType() // STRING
+  property.getPropertyDataFormat() // YAML
+  property.getCurrentValue(entityId, entityAttributes) // returns the stringified yaml (check above table)
   ```
 </details>
+
+## Set listener for the feature and property data changes
+
+The SDK provides mechanism to notify you in real-time when feature flag's or property's configuration
+changes. You can subscribe to configuration changes using the same appConfigClient.
+
+```kt
+import com.ibm.cloud.appconfiguration.android.sdk.configurations.ConfigurationUpdateListener
+
+appConfigClient.registerConfigurationUpdateListener(object : ConfigurationUpdateListener {
+    override fun onConfigurationUpdate() {
+        println("Received updates on configurations")
+        // **add your code**
+        // To find the effect of any configuration changes, you can call the feature or property related methods
+        
+        // val feature: Feature? = appConfigClient.getFeature("online-check-in")
+        // if (feature != null) {
+        //    val newValue = feature.getCurrentValue(entityId, entityAttributes)
+        // }
+    }
+})
+
+```
 
 ## Enable/Disable Logger (optional)
 
 Use this method to enable/disable the logging in SDK.
 
 ```kt
-val appConfiguration = AppConfiguration.getInstance()
+val appConfigClient = AppConfiguration.getInstance()
 
 // Enable Logger 
-appConfiguration.enableDebug(true)
+appConfigClient.enableDebug(true)
 
 // Disable Logger
-appConfiguration.enableDebug(false)
+appConfigClient.enableDebug(false)
 
 ```
 
@@ -276,20 +312,20 @@ appConfiguration.enableDebug(false)
 Fetch the latest configuration data. 
 
 ```kt
-appConfiguration.fetchConfigurations()
+appConfigClient.fetchConfigurations()
 ```
 
 
 # Java
 
-## Installation Java
+## Installation
 
 Choose to integrate the AppConfiguration Android client SDK package using either of the following options:
 
 - Download and import the package to your Android Studio project
 - Get the package through Gradle
 
-## Initialize Java SDK
+## Import SDK
 
 - Configure the Module level `build.gradle` and Project level `build.gradle` files.
 
@@ -340,18 +376,24 @@ Choose to integrate the AppConfiguration Android client SDK package using either
         id 'kotlin-android'
     }
     ```
-## Import AppConfiguration Java SDK
+## Initialize AppConfiguration SDK
 
 ```java
-      AppConfiguration appConfiguration = AppConfiguration.getInstance();
-      appConfiguration.init(getApplication(), 
-                            region, "guid", "apikey");
+import com.ibm.cloud.appconfiguration.android.sdk.AppConfiguration;
 
-      // To start the configuration fetching operation, set the collectionId and environmentId in the following way.
-      String collectionId = "airlines-webapp";
-      String environmentId = "dev";
-      appConfiguration.setContext(collectionId, environmentId);
+String collectionId = "airlines-webapp";
+String environmentId = "dev";
+    
+AppConfiguration appConfigClient = AppConfiguration.getInstance();
+appConfigClient.init(getApplication(), 
+                    "region", "guid", "apikey");
+appConfigClient.setContext(collectionId, environmentId);
 ```
+:red_circle: **Important** :red_circle:
+
+The **`init()`** and **`setContext()`** are the initialisation methods and should be invoked **only
+once** using appConfigClient. The appConfigClient, once initialised, can be obtained across modules
+using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-the-appconfigclient-across-other-modules-1).
 
 - region : Region name where the service instance is created. Use
     - `AppConfiguration.REGION_US_SOUTH` for Dallas
@@ -362,37 +404,22 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
 - environmentId : Id of the environment created in App Configuration service instance under the **Environments** section.
 
-
-## Listen to the feature changes.
-
-To listen to the configuration changes in your App Configuration service instance, implement the `registerConfigurationUpdateListener` event listener as mentioned below.
-
-```java
-
-appConfiguration.registerConfigurationUpdateListener(new ConfigurationUpdateListener() {
-    @Override
-    public void onConfigurationUpdate() {
-       // ADD YOUR CODE
-    }
-});
-```
-
 ## Get single feature
 
 ```java
-Feature feature = appConfiguration.getFeature("online-check-in"); //feature can be null incase of an invalid feature id
+Feature feature = appConfigClient.getFeature("online-check-in"); //feature can be null incase of an invalid feature id
 ```
 
 ## Get all feature
 
 ```java
-HashMap<String,Feature> features =  appConfiguration.getFeatures();
+HashMap<String,Feature> features =  appConfigClient.getFeatures();
 
 ```
 
 ## Evaluate a feature
 
-Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
+Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
 
 ### Usage
 
@@ -410,8 +437,8 @@ Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evalua
         e.printStackTrace();
     }
 
-    AppConfiguration appConfiguration = AppConfiguration.getInstance();
-    Feature feature = appConfiguration.getFeature("online-check-in");
+    AppConfiguration appConfigClient = AppConfiguration.getInstance();
+    Feature feature = appConfigClient.getFeature("online-check-in");
     if (feature != null) {
        String value = (String) feature.getCurrentValue(entityId, entityAttributes);
     }
@@ -423,8 +450,8 @@ Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evalua
     ```java
 
     String entityId = "john_doe";
-    AppConfiguration appConfiguration = AppConfiguration.getInstance();
-    Feature feature = appConfiguration.getFeature("online-check-in");
+    AppConfiguration appConfigClient = AppConfiguration.getInstance();
+    Feature feature = appConfigClient.getFeature("online-check-in");
     if (feature != null) {
        String value = (String) feature.getCurrentValue(entityId);
     }
@@ -434,19 +461,19 @@ Use the `feature.getCurrentValue(entity_id, entity_attributes)` method to evalua
 ## Get single Property
 
 ```java
-Property property = appConfiguration.getProperty("check-in-charges"); //property can be null incase of an invalid property id
+Property property = appConfigClient.getProperty("check-in-charges"); //property can be null incase of an invalid property id
 
 ```
 
 ## Get all Properties
 
 ```java
-HashMap<String,Property> properties =  appConfiguration.getProperties();
+HashMap<String,Property> properties =  appConfigClient.getProperties();
 ```
 
 ## Evaluate a property
 
-Use the `property.get_current_value(entity_id=entity_id, entity_attributes=entity_attributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
+Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
 
 ### Usage
 
@@ -465,8 +492,8 @@ Use the `property.get_current_value(entity_id=entity_id, entity_attributes=entit
         e.printStackTrace();
     }
 
-    AppConfiguration appConfiguration = AppConfiguration.getInstance();
-    Property property = appConfiguration.getProperty("check-in-charges");
+    AppConfiguration appConfigClient = AppConfiguration.getInstance();
+    Property property = appConfigClient.getProperty("check-in-charges");
 
     if (property != null) {
         String value = (String) property.getCurrentValue(entityId, entityAttributes);
@@ -480,12 +507,29 @@ Use the `property.get_current_value(entity_id=entity_id, entity_attributes=entit
 
     String entityId = "john_doe";
 
-    AppConfiguration appConfiguration = AppConfiguration.getInstance();
-    Property property = appConfiguration.getProperty("check-in-charges");
+    AppConfiguration appConfigClient = AppConfiguration.getInstance();
+    Property property = appConfigClient.getProperty("check-in-charges");
     if (property != null) {
         String value = (String) property.getCurrentValue(entityId);
     }
     ```
+
+## Fetching the appConfigClient across other modules
+
+Once the SDK is initialized, the appConfigClient can be obtained across other modules as shown
+below:
+
+```java
+// **other modules**
+
+import com.ibm.cloud.appconfiguration.sdk.AppConfiguration;
+AppConfiguration appConfigClient = AppConfiguration.getInstance();
+
+Feature feature = appConfigClient.getFeature("string-feature");
+boolean enabled = feature.isEnabled();
+String featureValue = (String) feature.getCurrentValue(entityId, entityAttributes);
+```
+
 ## Supported Data types
 
 App Configuration service allows to configure the feature flag and properties in the following data types : Boolean,
@@ -506,7 +550,7 @@ format accordingly as shown in the below table.
 <details><summary>Feature flag</summary>
 
   ```java
-  Feature feature = appConfiguration.getFeature("json-feature");
+  Feature feature = appConfigClient.getFeature("json-feature");
   feature.getFeatureDataType(); // STRING
   feature.getFeatureDataFormat(); // JSON
 
@@ -516,7 +560,7 @@ format accordingly as shown in the below table.
     result.get("key") // returns the value of the key
   }
   
-  Feature feature = appConfiguration.getFeature("yaml-feature");
+  Feature feature = appConfigClient.getFeature("yaml-feature");
   feature.getFeatureDataType(); // STRING
   feature.getFeatureDataFormat(); // YAML
   feature.getCurrentValue(entityId, entityAttributes); // returns the stringified yaml (check above table)
@@ -526,7 +570,7 @@ format accordingly as shown in the below table.
 <details><summary>Property</summary>
 
   ```java
-  Property property = appConfiguration.getProperty("json-property");
+  Property property = appConfigClient.getProperty("json-property");
   property.getPropertyDataType(); // STRING
   property.getPropertyDataFormat(); // JSON
 
@@ -536,25 +580,48 @@ format accordingly as shown in the below table.
     result.get("key") // returns the value of the key
   }
   
-  Property property = appConfiguration.getProperty("yaml-property");
+  Property property = appConfigClient.getProperty("yaml-property");
   property.getPropertyDataType(); // STRING
   property.getPropertyDataFormat(); // YAML
   property.getCurrentValue(entityId, entityAttributes); // returns the stringified yaml (check above table)
   ```
 </details>
 
+## Listen to the feature changes.
+
+The SDK provides mechanism to notify you in real-time when feature flag's or property's configuration
+changes. You can subscribe to configuration changes using the same appConfigClient.
+
+```java
+import com.ibm.cloud.appconfiguration.android.sdk.configurations.ConfigurationUpdateListener;
+
+appConfigClient.registerConfigurationUpdateListener(new ConfigurationUpdateListener() {
+    @Override
+    public void onConfigurationUpdate() {
+        System.out.println("Received update on configurations");
+        // **add your code**
+        // To find the effect of any configuration changes, you can call the feature or property related methods
+        //
+        // Feature feature = appConfigClient.getFeature("numeric-feature");
+        // if (feature != null) {
+        //      Integer newValue = (Integer) feature.getCurrentValue(entityId, entityAttributes);
+        // }
+    }
+});
+```
+
 ## Enable debugger (Optional)
 
 Use this method to enable/disable the logging in SDK.
 
 ```Java
-AppConfiguration appConfiguration = AppConfiguration.getInstance();
+AppConfiguration appConfigClient = AppConfiguration.getInstance();
 
 // Enable Logger 
-appConfiguration.enableDebug(true);
+appConfigClient.enableDebug(true);
 
 // Disable Logger
-appConfiguration.enableDebug(false);
+appConfigClient.enableDebug(false);
 
 ```
 
@@ -563,7 +630,7 @@ appConfiguration.enableDebug(false);
 Fetch the latest configuration data. 
 
 ```Java
-appConfiguration.fetchConfigurations();
+appConfigClient.fetchConfigurations();
 ```
 
 ## Examples 
