@@ -56,7 +56,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.1"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.2"
 	    }
         ```
         
@@ -94,6 +94,7 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
     - `AppConfiguration.REGION_US_SOUTH` for Dallas
     - `AppConfiguration.REGION_EU_GB` for London
     - `AppConfiguration.REGION_AU_SYD` for Sydney
+    - `AppConfiguration.REGION_US_EAST` for Washington DC
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
@@ -340,7 +341,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.1"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.2"
 	    }
         ```
     
@@ -399,6 +400,7 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
     - `AppConfiguration.REGION_US_SOUTH` for Dallas
     - `AppConfiguration.REGION_EU_GB` for London
     - `AppConfiguration.REGION_AU_SYD` for Sydney
+    - `AppConfiguration.REGION_US_EAST` for Washington DC
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.

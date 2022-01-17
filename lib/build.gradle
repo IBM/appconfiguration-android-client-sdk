@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'com.vanniktech.maven.publish'
 }
 apply from: '../jacoco.gradle'
 
@@ -21,8 +23,8 @@ android {
         minSdkVersion 22
         targetSdkVersion 31
         versionCode 1
-        versionName "0.2.1"
-        buildConfigField 'String', 'VERSION_NAME', "\"0.2.1\""
+        versionName "0.2.2"
+        buildConfigField 'String', 'VERSION_NAME', "\"0.2.2\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -48,6 +50,13 @@ android {
         exclude("META-INF/LICENSE*")
         exclude 'META-INF/rxkotlin.properties'
         exclude 'META-INF/rxkotlin_main.kotlin_module'
+    }
+    publishing {
+        repositories {
+            maven {
+                url="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            }
+        }
     }
 }
 

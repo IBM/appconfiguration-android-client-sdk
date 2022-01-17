@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
  * Toggle feature flag states in the cloud to activate or deactivate features in your application or
  * environment, when required. You can also manage the properties for distributed applications centrally.
  *
- * @version 0.2.1
+ * @version 0.2.2
  * @see <a href="https://cloud.ibm.com/docs/app-configuration">App Configuration</a>
  */
 
@@ -63,6 +63,7 @@ class AppConfiguration {
         const val REGION_US_SOUTH = "us-south"
         const val REGION_EU_GB = "eu-gb"
         const val REGION_AU_SYD = "au-syd"
+        const val REGION_US_EAST = "us-east"
 
         @JvmField
         var overrideServerHost: String? = null
