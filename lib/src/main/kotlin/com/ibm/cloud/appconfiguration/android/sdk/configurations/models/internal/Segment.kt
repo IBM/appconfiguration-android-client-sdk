@@ -46,7 +46,7 @@ class Segment(segments: JSONObject) {
      * @param entityAttributes A JSONObject containing all the user attributes.
      * @return Boolean
      */
-    fun evaluateRule(entityAttributes: JSONObject): Boolean {
+    fun evaluateRule(entityAttributes: JSONObject?): Boolean {
         for (index in 0 until rules.length()) {
             try {
                 val rule =

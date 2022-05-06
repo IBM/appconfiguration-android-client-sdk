@@ -23,8 +23,8 @@ android {
         minSdkVersion 22
         targetSdkVersion 31
         versionCode 1
-        versionName "0.2.2"
-        buildConfigField 'String', 'VERSION_NAME', "\"0.2.2\""
+        versionName "0.3.0"
+        buildConfigField 'String', 'VERSION_NAME', "\"0.3.0\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -68,7 +68,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
     implementation 'com.ibm.cloud:sdk-core:9.15.1'
-
+    implementation 'commons-codec:commons-codec:1.15'
     testImplementation 'junit:junit:4.13.2'
     testImplementation "org.json:json:20201115"
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

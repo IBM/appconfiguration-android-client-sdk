@@ -26,7 +26,6 @@ class URLBuilderTest {
     fun urlBuilderPublicHost() {
 
         val builder = URLBuilder.getInstance()
-        AppConfiguration.overrideServerHost = null
 
         builder.init("flightprojects", "dev")
 
@@ -39,7 +38,7 @@ class URLBuilderTest {
     fun urlBuilderLocalHost() {
 
         val builder = URLBuilder.getInstance()
-        AppConfiguration.overrideServerHost = "https://localhost:8080"
+        AppConfiguration.overrideServiceUrl("https://localhost:8080")
         builder.init("flightprojects", "dev")
 
         assertNotNull(builder.getConfigUrl())

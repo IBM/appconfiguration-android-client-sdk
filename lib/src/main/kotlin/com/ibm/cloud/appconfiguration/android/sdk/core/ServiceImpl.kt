@@ -51,7 +51,7 @@ class ServiceImpl(name: String?, authenticator: Authenticator?) : BaseService(na
         }
 
         private fun createIamAuth(): IamAuthenticator? {
-            return if (AppConfiguration.overrideServerHost != null) {
+            return if (AppConfiguration().getOverrideServiceUrl() != null) {
                 IamAuthenticator.Builder()
                     .url(ConfigConstants.DEFAULT_HTTP_TYPE + ConfigConstants.DEFAULT_IAM_DEV_STAGE_URL)
                     .apikey(AppConfiguration.getInstance().getApikey())

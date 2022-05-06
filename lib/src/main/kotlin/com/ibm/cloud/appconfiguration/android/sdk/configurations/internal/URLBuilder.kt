@@ -50,8 +50,8 @@ internal class URLBuilder {
      */
     fun init(collectionId: String, environmentId: String) {
         httpBase = ConfigConstants.DEFAULT_HTTP_TYPE
-        if (AppConfiguration.overrideServerHost != null) {
-            httpBase = AppConfiguration.overrideServerHost!!
+        if (AppConfiguration().getOverrideServiceUrl() != null) {
+            httpBase = AppConfiguration().getOverrideServiceUrl()!!
         } else {
             httpBase += AppConfiguration.getInstance().getRegion()
             httpBase += ConfigConstants.DEFAULT_BASE_URL
@@ -78,8 +78,8 @@ internal class URLBuilder {
     fun getMeteringUrl(instanceGuid: String): String {
 
         var base = ConfigConstants.DEFAULT_HTTP_TYPE
-        if (AppConfiguration.overrideServerHost != null) {
-            base = AppConfiguration.overrideServerHost.toString() + _service
+        if (AppConfiguration().getOverrideServiceUrl() != null) {
+            base = AppConfiguration().getOverrideServiceUrl().toString() + _service
         } else {
             base += AppConfiguration.getInstance()
                 .getRegion() + ConfigConstants.DEFAULT_BASE_URL + _service

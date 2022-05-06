@@ -294,7 +294,7 @@ internal class Metering {
         var lim = 0
         val subUsagesArray = data.getJSONArray("usages")
         var result = JSONArray()
-        while (lim <= count) {
+        while (lim < count) {
             val endIndex =
                 if (lim + ConfigConstants.DEFAULT_USAGE_LIMIT >= count) count else lim + ConfigConstants.DEFAULT_USAGE_LIMIT
             val collectionsMap = JSONObject()

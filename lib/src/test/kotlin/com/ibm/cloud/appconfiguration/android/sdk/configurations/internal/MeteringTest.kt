@@ -71,10 +71,12 @@ class MeteringTest {
         data.put("usages", array)
 
         runBlocking {
+
             val result: JSONArray = Metering.getInstance().sendSplitMetering("guid", data, 30)
-            assertEquals(result.length(), 2)
-            assertEquals((result[0] as JSONObject).getJSONArray("usages").length(), 25)
-            assertEquals((result[1] as JSONObject).getJSONArray("usages").length(), 5)
+            assertEquals(result.length(), 3)
+            assertEquals((result[0] as JSONObject).getJSONArray("usages").length(), 10)
+            assertEquals((result[1] as JSONObject).getJSONArray("usages").length(), 10)
+            assertEquals((result[2] as JSONObject).getJSONArray("usages").length(), 10)
         }
 
     }
