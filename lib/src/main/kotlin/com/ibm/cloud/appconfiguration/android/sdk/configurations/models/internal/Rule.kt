@@ -109,11 +109,11 @@ class Rule(rules: JSONObject) {
      * @param entityAttributes a JSONObject containing all the user attributes
      * @return `true` if evaluation is passed against respective operator. `false` otherwise
      */
-    fun evaluateRule(entityAttributes: JSONObject): Boolean {
+    fun evaluateRule(entityAttributes: JSONObject?): Boolean {
         var key: Any? = null
         var result = false
 
-        if (entityAttributes.has(attribute_name)) {
+        if (entityAttributes != null && entityAttributes.has(attribute_name)) {
             try {
                 key = entityAttributes[attribute_name]
             } catch (e: JSONException) {

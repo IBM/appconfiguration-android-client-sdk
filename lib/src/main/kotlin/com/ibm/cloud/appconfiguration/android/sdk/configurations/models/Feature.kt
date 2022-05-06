@@ -19,9 +19,11 @@ package com.ibm.cloud.appconfiguration.android.sdk.configurations.models
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.ConfigurationHandler
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.ConfigConstants
 import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.ConfigMessages
+import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.Validators
 import com.ibm.cloud.appconfiguration.android.sdk.core.Logger
 import org.json.JSONArray
 import org.json.JSONObject
+
 
 /**
  * Feature object.
@@ -38,6 +40,7 @@ class Feature(featureList: JSONObject) {
     private var format: String? = ""
     private lateinit var disabledValue: Any
     private lateinit var enabledValue: Any
+    private var rolloutPercentage: Int = ConfigConstants.DEFAULT_ROLLOUT_PERCENTAGE
 
     init {
         try {
@@ -50,6 +53,9 @@ class Feature(featureList: JSONObject) {
             format = featureList.optString("format")
             enabledValue = featureList["enabled_value"]
             disabledValue = featureList["disabled_value"]
+            if (featureList.has(ConfigConstants.ROLLOUT_PERCENTAGE)) {
+                    rolloutPercentage = featureList.getInt(ConfigConstants.ROLLOUT_PERCENTAGE)
+            }
         } catch (e: Exception) {
             Logger.error("Invalid action in Feature class. ${e.message}")
         }
@@ -92,19 +98,11 @@ class Feature(featureList: JSONObject) {
     }
 
     /**
-     * Return the enabled status of the feature.
+     * Return the state of the feature flag. Returns true, if the feature flag is enabled, otherwise returns false.
      *
      * @return `true` or `false`
      */
     fun isEnabled(): Boolean {
-
-        val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
-        configurationHandler.recordEvaluation(
-            featureId,
-            null,
-            ConfigConstants.DEFAULT_ENTITY_ID,
-            ConfigConstants.DEFAULT_SEGMENT_ID
-        )
         return enabled
     }
 
@@ -134,13 +132,31 @@ class Feature(featureList: JSONObject) {
     }
 
     /**
-     * Get the evaluated value of the feature. Pass the Data type
+     * Get the rollout_percentage
      *
-     * @param entityId id of the entity
-     * @param entityAttributes entity attributes JSON object
-     * @return evaluated value
+     * @return rollout_percentage
      */
-    fun getCurrentValue(entityId: String, entityAttributes: JSONObject = JSONObject()): Any? {
+    fun getRolloutPercentage(): Int {
+        return rolloutPercentage
+    }
+
+    /**
+     * @param entityId Id of the Entity.
+     * This will be a string identifier related to the Entity against which the feature is evaluated.
+     * For example, an entity might be an instance of an app that runs on a mobile device, a microservice that runs on the cloud, or a component of infrastructure that runs that microservice.
+     * For any entity to interact with App Configuration, it must provide a unique entity ID.
+     *
+     * @param entityAttributes A JSON object consisting of the attribute name and their values that defines the specified entity.
+     * This is an optional parameter if the feature flag is not configured with any targeting definition. If the targeting is configured,
+     * then entityAttributes should be provided for the rule evaluation.
+     * An attribute is a parameter that is used to define a segment. The SDK uses the attribute values to determine if the
+     * specified entity satisfies the targeting rules, and returns the appropriate feature flag value.
+     *
+     * @return {boolean|string|number|null} Returns one of the Enabled/Disabled/Overridden value
+     * based on the evaluation.
+     * The data type of returned value matches that of feature flag.
+     */
+    fun getCurrentValue(entityId: String, entityAttributes: JSONObject? = JSONObject()): Any? {
 
         if (entityId == "") {
             Logger.error(ConfigMessages.ENTITY_UPDATE_ERROR)
@@ -148,6 +164,25 @@ class Feature(featureList: JSONObject) {
         }
 
         val configurationHandler: ConfigurationHandler = ConfigurationHandler.getInstance()
-        return configurationHandler.featureEvaluation(this, enabled, entityId, entityAttributes)
+        val map: HashMap<String, Any?> = configurationHandler.featureEvaluation(
+            this, entityId, entityAttributes) as HashMap<String, Any?>
+        return map[ConfigConstants.CURRENT_VALUE]
     }
+
+    /**
+     * Get the evaluated value of the feature.
+     *
+     * @param entityId id of the entity
+     * This will be a string identifier related to the Entity against which the feature is evaluated.
+     * For example, an entity might be an instance of an app that runs on a mobile device or a
+     * microservice that runs on the cloud,
+     * or a component of infrastructure that runs that microservice.
+     * For any entity to interact with App Configuration, it must provide a unique entity ID.
+     * @return {boolean|string|number|null} Returns one of the Enabled/Disabled/Overridden value based on the evaluation.
+     * The data type of returned value matches that of feature flag.
+     */
+    fun getCurrentValue(entityId: String): Any? {
+        return getCurrentValue(entityId, null)
+    }
+
 }

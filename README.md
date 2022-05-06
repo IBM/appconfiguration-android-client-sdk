@@ -56,7 +56,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.2"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.0"
 	    }
         ```
         
@@ -77,10 +77,12 @@ val collectionId = "airlines-webapp"
 val environmentId = "dev"
 
 val appConfigClient = AppConfiguration.getInstance()
+//application is a member of the AppCompatActivity() class, if you have inherited the 
+//AppCompatActivity() class then you can call the application variable.
 appConfigClient.init(application,
                       "region",
-                      "apikey",
-                      "guid")
+                      "guid",
+                      "apikey")
 appConfigClient.setContext(collectionId, environmentId)
 ```
 
@@ -104,6 +106,12 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
 
 ```kt
 val feature: Feature? = appConfigClient.getFeature("online-check-in")
+if (feature != null) {
+    println("Feature Name : ${feature.getFeatureName()}")
+    println("Feature Id : ${feature.getFeatureId()}")
+    println("Feature Type : ${feature.getFeatureDataType()}")
+    println("Is feature enabled? : ${feature.isEnabled()}")
+}
 ```
 
 ## Get all features
@@ -114,44 +122,49 @@ val features: HashMap<String, Feature>? = appConfigClient.getFeatures()
 
 ## Evaluate a feature
 
-Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
+Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the
+feature flag. This method returns one of the Enabled/Disabled/Overridden value based on the
+evaluation.
 
-### Usage
+```kt
+val entityId = "john_doe"
+val entityAttributes = JSONObject()
 
-  - If the feature flag is configured with segments in the AppConfiguration service, provide a json object as entityAttributes parameter to this method.
+try {
+    entityAttributes.put("city", "Bangalore")
+    entityAttributes.put("country", "India")
+} catch (e: JSONException) {
+    e.printStackTrace()
+}
 
-    ```kt
-    val entityId = "john_doe"
-    val entityAttributes = JSONObject()
-    
-    try {
-        entityAttributes.put("city", "Bangalore")
-        entityAttributes.put("country", "India")
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
-   
-    val appConfigClient = AppConfiguration.getInstance()
-    val feature: Feature? = appConfigClient.getFeature("online-check-in")
-    if (feature != null) {
-        val value = feature.getCurrentValue(entityId, entityAttributes)
-    }
-    ```
+val appConfigClient = AppConfiguration.getInstance()
+val feature: Feature? = appConfigClient.getFeature("online-check-in")
+if (feature != null) {
+    val value = feature.getCurrentValue(entityId, entityAttributes)
+}
+```
 
-  - If the feature flag is not targeted to any segments and the feature flag is turned ON this method returns the feature enabled value. And when the feature flag is turned OFF this method returns the feature disabled value.
-
-     ```kt
-    val entityId = "john_doe"
-    val feature: Feature? = appConfigClient.getFeature("online-check-in")
-    if (feature != null) {
-        val value = feature.getCurrentValue(entityId)
-    }
-    ```
+* entityId: Id of the Entity. This will be a string identifier related to the Entity against which
+  the feature is evaluated. For example, an entity might be an instance of an app that runs on a
+  mobile device, a microservice that runs on the cloud, or a component of infrastructure that runs
+  that microservice. For any entity to interact with App Configuration, it must provide a unique
+  entity ID.
+* entityAttributes: A JSON object consisting of the attribute name and their values that defines the
+  specified entity. This is an optional parameter if the feature flag is not configured with any
+  targeting definition. If the targeting is configured, then entityAttributes should be provided for
+  the rule evaluation. An attribute is a parameter that is used to define a segment. The SDK uses
+  the attribute values to determine if the specified entity satisfies the targeting rules, and
+  returns the appropriate feature flag value.
 
 ## Get single Property
 
 ```kt
 val property: Property? = appConfigClient.getProperty("check-in-charges")
+if (property != null) {
+    println("Property Name : ${property.getPropertyName()}")
+    println("Property Id : ${property.getPropertyId()}")
+    println("Property Type : ${property.getPropertyDataType()}")
+}
 ```
 
 ## Get all Properties
@@ -162,40 +175,39 @@ val properties: HashMap<String, Property>? = appConfigClient.getProperties()
 
 ## Evaluate a property
 
-Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
+Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the
+property. This method returns the default property value or its overridden value based on the
+evaluation.
 
-### Usage
+```kt
+val entityId = "john_doe"
+val entityAttributes = JSONObject()
 
-- If the property is configured with segments in the App Configuration service, provide a json object as entityAttributes parameter to this method.
+try {
+    entityAttributes.put("city", "Bangalore")
+    entityAttributes.put("country", "India")
+} catch (e: JSONException) {
+    e.printStackTrace()
+}
 
-    ```kt
-        val entityId = "john_doe"
-        val entityAttributes = JSONObject()
+val appConfigClient = AppConfiguration.getInstance()
+val property: Property? = appConfigClient.getProperty("check-in-charges")
+if (property != null) {
+    val value = property.getCurrentValue(entityId, entityAttributes)
+}
+```
 
-        try {
-            entityAttributes.put("city", "Bangalore")
-            entityAttributes.put("country", "India")
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-
-
-        val appConfigClient = AppConfiguration.getInstance()
-        val property: Property? = appConfigClient.getProperty("check-in-charges")
-        if (property != null) {
-            val value = property.getCurrentValue(entityId, entityAttributes)
-        }
-    ```
-
-- If the property is not targeted to any segments this method returns the property value.
-
-    ```kt
-    val entityId = "john_doe"
-    val property: Property? = appConfigClient.getProperty("check-in-charges")
-    if (property != null) {
-        val value = property.getCurrentValue(entityId)
-    }
-    ```
+* entityId: Id of the Entity. This will be a string identifier related to the Entity against which
+  the property is evaluated. For example, an entity might be an instance of an app that runs on a
+  mobile device, a microservice that runs on the cloud, or a component of infrastructure that runs
+  that microservice. For any entity to interact with App Configuration, it must provide a unique
+  entity ID.
+* entityAttributes: A JSON object consisting of the attribute name and their values that defines the
+  specified entity. This is an optional parameter if the property is not configured with any
+  targeting definition. If the targeting is configured, then entityAttributes should be provided for
+  the rule evaluation. An attribute is a parameter that is used to define a segment. The SDK uses
+  the attribute values to determine if the specified entity satisfies the targeting rules, and
+  returns the appropriate property value.
 
 ## Fetching the appConfigClient across other modules
 
@@ -341,7 +353,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.2.2"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.0"
 	    }
         ```
     
@@ -409,7 +421,14 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
 ## Get single feature
 
 ```java
-Feature feature = appConfigClient.getFeature("online-check-in"); //feature can be null incase of an invalid feature id
+Feature feature = appConfigClient.getFeature("online-check-in"); // feature can be null incase of an invalid feature id
+
+if (feature != null) {
+    System.out.println("Feature Name : " + feature.getFeatureName());
+    System.out.println("Feature Id : " + feature.getFeatureId());
+    System.out.println("Feature Type : " + feature.getFeatureDataType());
+    System.out.println("Is feature enabled? : " + feature.isEnabled());
+}
 ```
 
 ## Get all feature
@@ -421,50 +440,51 @@ HashMap<String,Feature> features =  appConfigClient.getFeatures();
 
 ## Evaluate a feature
 
-Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the feature flag. Pass an unique entityId as the parameter to perform the feature flag evaluation.
+Use the `feature.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the
+feature flag. This method returns one of the Enabled/Disabled/Overridden value based on the
+evaluation.
 
-### Usage
+```java
+String entityId = "john_doe";
+JSONObject entityAttributes = new JSONObject();
 
-- If the feature flag is configured with segments in the AppConfiguration service, provide a json object as entityAttributes parameter to this method.
+try {
+    entityAttributes.put("city", "Bengaluru");
+    entityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
 
-    ```java
+AppConfiguration appConfigClient = AppConfiguration.getInstance();
+Feature feature = appConfigClient.getFeature("online-check-in");
+if (feature != null) {
+   String value = (String) feature.getCurrentValue(entityId, entityAttributes);
+}
+```
 
-    String entityId = "john_doe";
-    JSONObject entityAttributes = new JSONObject();
-
-    try {
-        entityAttributes.put("city", "Bengaluru");
-        entityAttributes.put("country", "India");
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-    AppConfiguration appConfigClient = AppConfiguration.getInstance();
-    Feature feature = appConfigClient.getFeature("online-check-in");
-    if (feature != null) {
-       String value = (String) feature.getCurrentValue(entityId, entityAttributes);
-    }
-    ```
-
-  - If the feature flag is not targeted to any segments and the feature flag is turned ON this method returns the feature enabled value. And when the feature flag is turned OFF this method returns the feature disabled value.
-
-
-    ```java
-
-    String entityId = "john_doe";
-    AppConfiguration appConfigClient = AppConfiguration.getInstance();
-    Feature feature = appConfigClient.getFeature("online-check-in");
-    if (feature != null) {
-       String value = (String) feature.getCurrentValue(entityId);
-    }
-    ```
-
+* entityId: Id of the Entity. This will be a string identifier related to the Entity against which
+  the feature is evaluated. For example, an entity might be an instance of an app that runs on a
+  mobile device, a microservice that runs on the cloud, or a component of infrastructure that runs
+  that microservice. For any entity to interact with App Configuration, it must provide a unique
+  entity ID.
+* entityAttributes: A JSON object consisting of the attribute name and their values that defines the
+  specified entity. This is an optional parameter if the feature flag is not configured with any
+  targeting definition. If the targeting is configured, then entityAttributes should be provided for
+  the rule evaluation. An attribute is a parameter that is used to define a segment. The SDK uses
+  the attribute values to determine if the specified entity satisfies the targeting rules, and
+  returns the appropriate feature flag value.
 
 ## Get single Property
 
 ```java
-Property property = appConfigClient.getProperty("check-in-charges"); //property can be null incase of an invalid property id
+Property property = appConfigClient.getProperty("check-in-charges"); // property can be null incase of an invalid property id
 
+if (property != null) {
+    System.out.println("Property Name : " + property.getPropertyName());
+    System.out.println("Property Id : " + property.getPropertyId());
+    System.out.println("Property Type : " + property.getPropertyDataType());
+}
+        
 ```
 
 ## Get all Properties
@@ -475,46 +495,41 @@ HashMap<String,Property> properties =  appConfigClient.getProperties();
 
 ## Evaluate a property
 
-Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the property. Pass an unique entityId as the parameter to perform the property evaluation.
+Use the `property.getCurrentValue(entityId, entityAttributes)` method to evaluate the value of the
+property. This method returns the default property value or its overridden value based on the
+evaluation.
 
-### Usage
+```java
 
-- If the property is configured with segments in the App Configuration service, provide a json object as entityAttributes parameter to this method.
+String entityId = "john_doe";
+JSONObject entityAttributes = new JSONObject();
 
+try {
+    entityAttributes.put("city", "Bengaluru");
+    entityAttributes.put("country", "India");
+} catch (JSONException e) {
+    e.printStackTrace();
+}
 
-    ```java
+AppConfiguration appConfigClient = AppConfiguration.getInstance();
+Property property = appConfigClient.getProperty("check-in-charges");
 
-    String entityId = "john_doe";
-    JSONObject entityAttributes = new JSONObject();
+if (property != null) {
+    String value = (String) property.getCurrentValue(entityId, entityAttributes);
+}
+```
 
-    try {
-        entityAttributes.put("city", "Bengaluru");
-        entityAttributes.put("country", "India");
-    } catch (JSONException e) {
-        e.printStackTrace();
-    }
-
-    AppConfiguration appConfigClient = AppConfiguration.getInstance();
-    Property property = appConfigClient.getProperty("check-in-charges");
-
-    if (property != null) {
-        String value = (String) property.getCurrentValue(entityId, entityAttributes);
-    }
-    ```
-
-- If the property is not targeted to any segments this method returns the property value.
-
-
-    ```java
-
-    String entityId = "john_doe";
-
-    AppConfiguration appConfigClient = AppConfiguration.getInstance();
-    Property property = appConfigClient.getProperty("check-in-charges");
-    if (property != null) {
-        String value = (String) property.getCurrentValue(entityId);
-    }
-    ```
+* entityId: Id of the Entity. This will be a string identifier related to the Entity against which
+  the property is evaluated. For example, an entity might be an instance of an app that runs on a
+  mobile device, a microservice that runs on the cloud, or a component of infrastructure that runs
+  that microservice. For any entity to interact with App Configuration, it must provide a unique
+  entity ID.
+* entityAttributes: A JSON object consisting of the attribute name and their values that defines the
+  specified entity. This is an optional parameter if the property is not configured with any
+  targeting definition. If the targeting is configured, then entityAttributes should be provided for
+  the rule evaluation. An attribute is a parameter that is used to define a segment. The SDK uses
+  the attribute values to determine if the specified entity satisfies the targeting rules, and
+  returns the appropriate property value.
 
 ## Fetching the appConfigClient across other modules
 

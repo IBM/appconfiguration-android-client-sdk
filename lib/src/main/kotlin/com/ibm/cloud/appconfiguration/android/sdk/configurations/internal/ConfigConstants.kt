@@ -16,6 +16,8 @@
 
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.internal
 
+import kotlin.math.pow
+
 /**
  * Constants used by the SDK
  */
@@ -28,5 +30,15 @@ object ConfigConstants {
     const val DEFAULT_BASE_URL = ".apprapp.cloud.ibm.com"
     const val DEFAULT_IAM_DEV_STAGE_URL = "iam.test.cloud.ibm.com"
     const val SERVICE_NAME = "AppConfiguration"
-    const val DEFAULT_USAGE_LIMIT = 25
+    const val DEFAULT_USAGE_LIMIT = 10
+    const val SEED = 0
+    const val OFFSET = 0
+    val MAX_VAL = 2.0.pow(32.0)
+    const val DEFAULT_ROLLOUT_PERCENTAGE = 100
+    const val ROLLOUT_PERCENTAGE = "rollout_percentage"
+    const val IS_ENABLED = "is_enabled"
+    const val CURRENT_VALUE = "current_value"
+    const val VALUE = "value"
+    const val FEATURE_ENABLED = "feature_enabled"
+    const val EVALUATED_SEGMENT_ID = "evaluated_segment_id";
 }

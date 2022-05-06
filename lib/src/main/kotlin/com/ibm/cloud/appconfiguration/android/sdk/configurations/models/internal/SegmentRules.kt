@@ -16,6 +16,7 @@
 
 package com.ibm.cloud.appconfiguration.android.sdk.configurations.models.internal
 
+import com.ibm.cloud.appconfiguration.android.sdk.configurations.internal.ConfigConstants
 import com.ibm.cloud.appconfiguration.android.sdk.core.Logger
 import org.json.JSONArray
 import org.json.JSONObject
@@ -29,12 +30,16 @@ class SegmentRules(segmentRules: JSONObject) {
     private var order = 1
     private lateinit var value: Any
     private lateinit var rules: JSONArray
+    private var rolloutPercentage: Any = ConfigConstants.DEFAULT_ROLLOUT_PERCENTAGE
 
     init {
         try {
             order = segmentRules.getInt("order")
             value = segmentRules["value"]
             rules = segmentRules.getJSONArray("rules")
+            if (segmentRules.has(ConfigConstants.ROLLOUT_PERCENTAGE)) {
+                rolloutPercentage = segmentRules.get(ConfigConstants.ROLLOUT_PERCENTAGE)
+            }
         } catch (e: Exception) {
             Logger.error("Invalid action in SegmentRules class.")
         }
@@ -61,4 +66,10 @@ class SegmentRules(segmentRules: JSONObject) {
      */
     fun getValue(): Any = value
 
+    /**
+     * Get the Segment level rollout percentage value.
+     *
+     * @return the value of the segment level rollout percentage
+     */
+    fun getRolloutPercentage(): Any = rolloutPercentage
 }

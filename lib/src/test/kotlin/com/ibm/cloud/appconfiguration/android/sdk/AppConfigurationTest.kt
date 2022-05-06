@@ -56,8 +56,9 @@ class AppConfigurationTest {
     public fun testConfigurationHandler() {
 
         val appConfiguration = AppConfiguration.getInstance()
-        AppConfiguration.overrideServerHost = "https://localhost:8080";
-        assertTrue(AppConfiguration.overrideServerHost == "https://localhost:8080");
+        AppConfiguration.overrideServiceUrl("https://localhost:8080")
+        assertTrue(AppConfiguration().getOverrideServiceUrl() == "https://localh" +
+                "ost:8080");
 
         appConfiguration.setContext("collectionId", "environmentId");
 

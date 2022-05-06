@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
  * Toggle feature flag states in the cloud to activate or deactivate features in your application or
  * environment, when required. You can also manage the properties for distributed applications centrally.
  *
- * @version 0.2.2
+ * @version 0.3.0
  * @see <a href="https://cloud.ibm.com/docs/app-configuration">App Configuration</a>
  */
 
@@ -59,15 +59,12 @@ class AppConfiguration {
 
     companion object {
         private var instance: AppConfiguration? = null
+        private var overrideServiceUrl: String? = null
 
         const val REGION_US_SOUTH = "us-south"
         const val REGION_EU_GB = "eu-gb"
         const val REGION_AU_SYD = "au-syd"
         const val REGION_US_EAST = "us-east"
-
-        @JvmField
-        var overrideServerHost: String? = null
-
         /**
          * Returns an instance of the [AppConfiguration] class. If the same [AppConfiguration] instance
          * is available in the cache, then that instance is returned.
@@ -81,6 +78,19 @@ class AppConfiguration {
                 instance = AppConfiguration()
             return instance!!
         }
+
+        fun overrideServiceUrl(url : String) {
+            val overriddenUrl : String = if (url[url.length-1] == '/') {
+                url.subSequence(0, url.length-1).toString()
+            } else {
+                url
+            }
+            overrideServiceUrl = overriddenUrl
+        }
+    }
+
+    internal fun getOverrideServiceUrl(): String? {
+        return overrideServiceUrl
     }
 
     /**
