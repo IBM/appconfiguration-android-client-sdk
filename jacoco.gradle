@@ -5,7 +5,7 @@ ext {
 }
 
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.8"
     reportsDir = file("../lib/build/reports/rep") // file for reports (xml, html)
 }
 
@@ -14,8 +14,8 @@ task jacocoTestReport(type: JacocoReport) {
     description = "Generate Jacoco coverage reports for Debug build"
 
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required.set(true)
+        html.required.set(true)
     }
 
     def excludes = ['**/R.class',
