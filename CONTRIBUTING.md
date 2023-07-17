@@ -37,23 +37,25 @@ By default, when you run `./gradlew testDebugUnitTest`, the unit tests are run.
 
 ## Code coverage
 
-This repo uses [Jacoco](https://www.eclemma.org/jacoco/) to measure code coverage. To obtain a code coverage report, run `./gradlew jacocoTestReport` from the `appconfiguration-android-client-sdk` folder, and then view the coverage report in the `lib/build/reports` directory:
+This repo uses [Jacoco](https://www.eclemma.org/jacoco/) to measure code coverage. To obtain a code
+coverage report, run `./gradlew jacocoTestReport`. View the coverage report:
 
 ```
-open rep/jacocoTestReport/html/index.html
+open lib/build/reports/rep/jacocoTestReport/html/index.html
 ```
 
 ## Generating documentation
 
-To generate the HTML docs for the project, run `./gradlew dokkaHtml` and then view the docs in the `lib/build/dokka/html` directory:
+To generate the HTML docs for the project, run `./gradlew dokkaHtml`. View the docs:
 
 ```
-open html/index.html
+open lib/build/dokka/html/index.html
 ```
-To generate the Javadoc for the project, run `./gradlew dokkaJavaDoc` and then view the docs in the `lib/build/dokka/javadoc` directory:
+
+To generate the Javadoc for the project, run `./gradlew dokkaJavaDoc`. View the docs:
 
 ```
-open javadoc/index.html
+open lib/build/dokka/javadoc/index.html
 ```
 
 ## Additional Resources
