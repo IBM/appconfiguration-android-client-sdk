@@ -6,7 +6,8 @@ ext {
 
 jacoco {
     toolVersion = "0.8.8"
-    reportsDir = file("../lib/build/reports/rep") // file for reports (xml, html)
+    reportsDirectory.set(layout.buildDirectory.dir("reports/rep"))
+    // file for reports (xml, html)
 }
 
 task jacocoTestReport(type: JacocoReport) {
@@ -35,14 +36,7 @@ task jacocoTestReport(type: JacocoReport) {
             excludes: excludes)
     def mainSrcMyLib = "../lib/src/main/kotlin"
 
-
-    classDirectories.from = files(
-            [kotlinDebugTreeMyLib]
-    )
-    sourceDirectories.from = files(
-            [mainSrcMyLib]
-    )
-    executionData.from = files(
-            "../lib/build/jacoco/testDebugUnitTest.exec"
-    )
+    getClassDirectories().setFrom(kotlinDebugTreeMyLib)
+    getSourceDirectories().setFrom(mainSrcMyLib)
+    getExecutionData().setFrom("../lib/build/jacoco/testDebugUnitTest.exec")
 }
