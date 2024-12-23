@@ -56,7 +56,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```kt
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.2"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.3"
 	    }
         ```
         
@@ -98,6 +98,9 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
     - `AppConfiguration.REGION_AU_SYD` for Sydney
     - `AppConfiguration.REGION_US_EAST` for Washington DC
     - `AppConfiguration.REGION_EU_DE` for Frankfurt
+    - `AppConfiguration.REGION_CA_TOR` for Toronto
+    - `AppConfiguration.REGION_JP_TOK` for Tokyo
+    - `AppConfiguration.REGION_JP_OSA` for Osaka
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
@@ -354,7 +357,7 @@ Choose to integrate the AppConfiguration Android client SDK package using either
 
         ```java
         dependencies {
-	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.2"
+	        implementation "com.ibm.cloud:appconfiguration-android-sdk:0.3.3"
 	    }
         ```
     
@@ -415,6 +418,9 @@ using **`AppConfiguration.getInstance()`**.  [See this example below](#fetching-
     - `AppConfiguration.REGION_AU_SYD` for Sydney
     - `AppConfiguration.REGION_US_EAST` for Washington DC
     - `AppConfiguration.REGION_EU_DE` for Frankfurt
+    - `AppConfiguration.REGION_CA_TOR` for Toronto
+    - `AppConfiguration.REGION_JP_TOK` for Tokyo
+    - `AppConfiguration.REGION_JP_OSA` for Osaka
 - guid : GUID of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - apikey : ApiKey of the App Configuration service. Get it from the service instance credentials section of the dashboard
 - collectionId : Id of the collection created in App Configuration service instance under the **Collections** section.
