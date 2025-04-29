@@ -55,14 +55,28 @@ class Rule(rules: JSONObject) {
 
         when (this.operator) {
             "endsWith" -> result = key.toString().endsWith(value.toString())
+            "notEndsWith" -> result = !key.toString().endsWith(value.toString())
             "startsWith" -> result = key.toString().startsWith(value.toString())
+            "notStartsWith" -> result = !key.toString().startsWith(value.toString())
             "contains" -> result = key.toString().contains(value.toString())
+            "notContains" -> result = !key.toString().contains(value.toString())
             "is" -> {
                 if (key::class == value::class) {
                     result = key == value
                 } else {
                     try {
                         result = value.toString() == key.toString()
+                    } catch (error: java.lang.Exception) {
+                        error.localizedMessage?.let { Logger.error(it) }
+                    }
+                }
+            }
+            "isNot" -> {
+                if (key::class == value::class) {
+                    result = key != value
+                } else {
+                    try {
+                        result = value.toString() != key.toString()
                     } catch (error: java.lang.Exception) {
                         error.localizedMessage?.let { Logger.error(it) }
                     }
@@ -123,14 +137,28 @@ class Rule(rules: JSONObject) {
             return result
         }
 
-        for (i in 0 until values.length()) {
-            try {
-                val value = values[i]
-                if (operatorCheck(key, value)) {
-                    result = true
+        if(listOf("isNot", "notContains", "notStartsWith", "notEndsWith").contains(this.operator)) {
+            result = true
+            for (i in 0 until values.length()) {
+                try {
+                    val value = values[i]
+                    if (!operatorCheck(key, value)) {
+                        result = false
+                    }
+                } catch (e: JSONException) {
+                    Logger.error("${e.message}")
                 }
-            } catch (e: JSONException) {
-                Logger.error("${e.message}")
+            }
+        } else {
+            for (i in 0 until values.length()) {
+                try {
+                    val value = values[i]
+                    if (operatorCheck(key, value)) {
+                        result = true
+                    }
+                } catch (e: JSONException) {
+                    Logger.error("${e.message}")
+                }
             }
         }
         return result

@@ -78,6 +78,34 @@ class RuleTest {
             setUpRuleObject("startsWith","tester")
             assertTrue(sut!!.evaluateRule(clientAttributes))
 
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("notStartsWith", "tester@dev", "email")
+            assertTrue(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("endsWith", "@dev", "email")
+            assertTrue(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("notEndsWith", "@dev", "email")
+            assertFalse(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("contains", "@", "email")
+            assertTrue(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("notContains", "#", "email")
+            assertTrue(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("is", "test@dev", "email")
+            assertTrue(sut!!.evaluateRule(clientAttributes))
+
+            clientAttributes.put("email", "test@dev")
+            setUpRuleObject("isNot", "test@dev", "email")
+            assertFalse(sut!!.evaluateRule(clientAttributes))
+
             clientAttributes.put("creditValues", 123)
             setUpRuleObject("is",123, "creditValues")
             assertTrue(sut!!.evaluateRule(clientAttributes))
